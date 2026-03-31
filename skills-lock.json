@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "app-store-preflight-skills": {
+      "source": "truongduy2611/app-store-preflight-skills",
+      "sourceType": "github",
+      "computedHash": "3e4cc0450924279cadbc6373da64c1c25d4380dd8f08f97e478770aa06cfc599"
+    },
+    "remotion-best-practices": {
+      "source": "remotion-dev/skills",
+      "sourceType": "github",
+      "computedHash": "2f673b7710813ac07c71c0a54657f740078aec6585f15edf351494499e1f9ac3"
+    }
+  }
+}

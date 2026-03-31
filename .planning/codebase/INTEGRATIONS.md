@@ -15,7 +15,7 @@
 - RevenueCat - In-App Purchase management (Apple IAP + Google Play Billing)
   - SDK/Client: `react-native-purchases` v9.14.0 + `react-native-purchases-ui` v9.14.0 (`lib/revenuecat.ts`)
   - Auth: API key (currently hardcoded test key in `lib/revenuecat.ts`)
-  - Entitlement: "Vault Pro"
+  - Entitlement: "Khaznety Pro"
   - Functions: `initRevenueCat()`, `checkIsPro()`, `getOfferings()`, `purchasePackage()`, `restorePurchases()`, `identifyUser()`
   - User linking: RevenueCat customer identified by Supabase user ID via `Purchases.logIn(userId)`
 

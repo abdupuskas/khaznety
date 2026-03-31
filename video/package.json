@@ -1,0 +1,34 @@
+{
+  "name": "vault-video",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render PromoVideo out/vault-promo-silent.mp4 --codec=h264 --crf=18",
+    "build:music": "remotion render PromoVideoWithMusic out/vault-promo-music.mp4 --codec=h264 --crf=18",
+    "still": "remotion still PromoVideo out/thumbnail.png --frame=300",
+    "build:v1": "remotion render UrgencyVideo out/vault-urgency.mp4 --codec=h264 --crf=18 --overwrite",
+    "build:v2": "remotion render AspirationVideo out/vault-aspiration.mp4 --codec=h264 --crf=18 --overwrite",
+    "build:v3": "remotion render AutomationVideo out/vault-automation.mp4 --codec=h264 --crf=18 --overwrite",
+    "build:all": "npm run build:v1 && npm run build:v2 && npm run build:v3",
+    "build:v1:music": "remotion render UrgencyVideoWithMusic out/vault-urgency-music.mp4 --codec=h264 --crf=18 --overwrite",
+    "build:v2:music": "remotion render AspirationVideoWithMusic out/vault-aspiration-music.mp4 --codec=h264 --crf=18 --overwrite",
+    "build:v3:music": "remotion render AutomationVideoWithMusic out/vault-automation-music.mp4 --codec=h264 --crf=18 --overwrite",
+    "build:all:music": "npm run build:v1:music && npm run build:v2:music && npm run build:v3:music"
+  },
+  "dependencies": {
+    "remotion": "4.0.291",
+    "@remotion/cli": "4.0.291",
+    "@remotion/player": "4.0.291",
+    "@remotion/transitions": "4.0.291",
+    "@remotion/google-fonts": "4.0.291",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "lucide-react": "^0.477.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "~5.3.3"
+  }
+}

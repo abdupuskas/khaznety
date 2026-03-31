@@ -1,10 +1,10 @@
-# Vault – Project Specification
+# Khaznety – Project Specification
 
 ## Overview
 
-**Vault** is a personal budgeting mobile app targeting the Egyptian market. The name reflects security, control, and the idea of a place where your money is organized and protected.
+**Khaznety** is a personal budgeting mobile app targeting the Egyptian market. The name reflects security, control, and the idea of a place where your money is organized and protected.
 
-Vault tracks expenses automatically via Apple Pay (iOS Shortcuts) and bank SMS notifications, and adds a robust budget management layer with hierarchical categories, rollover balances, and automated monthly income allocation.
+Khaznety tracks expenses automatically via Apple Pay (iOS Shortcuts) and bank SMS notifications, and adds a robust budget management layer with hierarchical categories, rollover balances, and automated monthly income allocation.
 
 ---
 
@@ -28,6 +28,9 @@ Vault tracks expenses automatically via Apple Pay (iOS Shortcuts) and bank SMS n
 | Charts | Victory Native XL (Skia-powered, 60fps) |
 | Notifications | Expo Notifications |
 | Localization | expo-localization + i18n-js (Arabic + English, RTL) |
+| Voice Input | expo-speech-recognition (Arabic + English) |
+| Export | expo-print + expo-sharing (CSV / PDF) |
+| Paywall UI | react-native-purchases-ui (RevenueCat Paywalls) |
 
 ---
 
@@ -46,7 +49,7 @@ Vault tracks expenses automatically via Apple Pay (iOS Shortcuts) and bank SMS n
 
 #### Apple Pay (iOS)
 - Uses **Apple Shortcuts** automation to detect Apple Pay transactions
-- When a payment is made, the Shortcut fires a URL scheme or HTTP request to log the transaction in Vault
+- When a payment is made, the Shortcut fires a URL scheme or HTTP request to log the transaction in Khaznety
 - The app receives: merchant name, amount, currency, timestamp
 - Setup is a one-time guided flow in onboarding
 - Guard against duplicate transactions (debounce + idempotency key)
@@ -60,7 +63,7 @@ Vault tracks expenses automatically via Apple Pay (iOS Shortcuts) and bank SMS n
 
 #### Manual Entry
 - Expense/Income/Transfer entry via the `AddTransactionSheet` bottom sheet, triggered from the Home screen action buttons
-- Voice input: tap mic button inside the Expense tab, speak in Arabic or English, AI parses it (v2)
+- Voice input: tap mic button inside the Expense tab, speak in Arabic or English — `expo-speech-recognition` parses amount + merchant
 
 ---
 
@@ -224,7 +227,7 @@ Goals allow users to save towards a specific target within a budget category.
 - 1 bank SMS sender configured
 - No export
 
-### Vault Pro (Paid)
+### Khaznety Pro (Paid)
 - Unlimited categories and sub-categories
 - Full rollover control with redistribution options
 - Automated monthly allocation templates
@@ -250,424 +253,111 @@ Goals allow users to save towards a specific target within a budget category.
 
 ## Supabase Schema & Migration
 
-### How to Apply This Schema
-
-**Use the Supabase MCP server to run all migrations directly.** Do not write migration files manually or use the Supabase CLI for schema changes. Claude Code must connect to the Supabase MCP server and execute each SQL block below in order.
-
-#### MCP Server Setup
-
-```jsonc
-// .cursor/mcp.json or mcp config
-{
-  "mcpServers": {
-    "supabase": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--supabase-url", "<YOUR_SUPABASE_URL>",
-        "--supabase-service-role-key", "<YOUR_SERVICE_ROLE_KEY>"
-      ]
-    }
-  }
-}
-```
-
-#### Migration Instructions for Claude Code
-
-When setting up the project database, Claude Code must:
-
-1. Connect to the Supabase MCP server
-2. Run each migration block below **in order** using the MCP `query` tool
-3. Verify each table was created successfully before proceeding to the next
-4. Enable RLS on every table immediately after creation
-5. Apply the RLS policies defined below each table
-6. Confirm all tables, indexes, and policies exist before closing the migration session
-
-Never hand-edit tables in the Supabase dashboard. All schema changes must go through MCP-executed SQL so the migration history stays in the codebase.
-
----
-
-### Migration Blocks (run in order via Supabase MCP)
-
-#### 001 — users
-
-```sql
-create table public.users (
-  id          uuid primary key references auth.users(id) on delete cascade,
-  email       text not null,
-  full_name   text,
-  locale      text not null default 'ar',
-  currency    text not null default 'EGP',
-  created_at  timestamptz not null default now()
-);
-
-alter table public.users enable row level security;
-
-create policy "Users can read own row"
-  on public.users for select
-  using (auth.uid() = id);
-
-create policy "Users can update own row"
-  on public.users for update
-  using (auth.uid() = id);
-```
-
-#### 002 — user_settings
-
-```sql
-create table public.user_settings (
-  id                       uuid primary key default gen_random_uuid(),
-  user_id                  uuid not null references public.users(id) on delete cascade,
-  income_amount            bigint not null default 0,
-  income_date              smallint not null default 1 check (income_date between 1 and 31),
-  base_currency            text not null default 'EGP',
-  rollover_default_behavior text not null default 'keep'
-                             check (rollover_default_behavior in ('keep','savings','goal','redistribute','reset')),
-  updated_at               timestamptz not null default now(),
-  unique (user_id)
-);
-
-alter table public.user_settings enable row level security;
-
-create policy "Users can manage own settings"
-  on public.user_settings for all
-  using (auth.uid() = user_id);
-```
-
-#### 003 — main_categories
-
-```sql
-create table public.main_categories (
-  id          uuid primary key default gen_random_uuid(),
-  user_id     uuid not null references public.users(id) on delete cascade,
-  name        text not null,
-  icon        text,
-  color       text,
-  sort_order  smallint not null default 0,
-  is_default  boolean not null default false,
-  created_at  timestamptz not null default now()
-);
-
-create index idx_main_categories_user_id on public.main_categories(user_id);
-
-alter table public.main_categories enable row level security;
-
-create policy "Users can manage own main categories"
-  on public.main_categories for all
-  using (auth.uid() = user_id);
-```
-
-#### 004 — sub_categories
-
-```sql
-create table public.sub_categories (
-  id                 uuid primary key default gen_random_uuid(),
-  main_category_id   uuid not null references public.main_categories(id) on delete cascade,
-  user_id            uuid not null references public.users(id) on delete cascade,
-  name               text not null,
-  monthly_budget     bigint not null default 0,
-  rollover_enabled   boolean not null default true,
-  rollover_behavior  text not null default 'keep'
-                      check (rollover_behavior in ('keep','savings','goal','redistribute','reset')),
-  created_at         timestamptz not null default now()
-);
-
-create index idx_sub_categories_user_id on public.sub_categories(user_id);
-create index idx_sub_categories_main_category_id on public.sub_categories(main_category_id);
-
-alter table public.sub_categories enable row level security;
-
-create policy "Users can manage own sub categories"
-  on public.sub_categories for all
-  using (auth.uid() = user_id);
-```
-
-#### 005 — accounts
-
-```sql
-create table public.accounts (
-  id          uuid primary key default gen_random_uuid(),
-  user_id     uuid not null references public.users(id) on delete cascade,
-  name        text not null,
-  type        text not null check (type in ('bank','cash','credit','wallet')),
-  balance     bigint not null default 0,
-  currency    text not null default 'EGP',
-  last_4      char(4),
-  created_at  timestamptz not null default now()
-);
-
-create index idx_accounts_user_id on public.accounts(user_id);
-
-alter table public.accounts enable row level security;
-
-create policy "Users can manage own accounts"
-  on public.accounts for all
-  using (auth.uid() = user_id);
-```
-
-#### 006 — transactions
-
-```sql
-create table public.transactions (
-  id               uuid primary key default gen_random_uuid(),
-  user_id          uuid not null references public.users(id) on delete cascade,
-  sub_category_id  uuid references public.sub_categories(id) on delete set null,
-  account_id       uuid references public.accounts(id) on delete set null,
-  amount           bigint not null,
-  currency         text not null default 'EGP',
-  merchant         text,
-  note             text,
-  source           text not null check (source in ('manual','apple_pay','sms','voice')),
-  idempotency_key  text unique,
-  transaction_date date not null default current_date,
-  created_at       timestamptz not null default now()
-);
-
-create index idx_transactions_user_id on public.transactions(user_id);
-create index idx_transactions_transaction_date on public.transactions(transaction_date);
-create index idx_transactions_sub_category_id on public.transactions(sub_category_id);
-
-alter table public.transactions enable row level security;
-
-create policy "Users can manage own transactions"
-  on public.transactions for all
-  using (auth.uid() = user_id);
-```
-
-#### 007 — monthly_budgets
-
-```sql
-create table public.monthly_budgets (
-  id               uuid primary key default gen_random_uuid(),
-  user_id          uuid not null references public.users(id) on delete cascade,
-  sub_category_id  uuid not null references public.sub_categories(id) on delete cascade,
-  month            char(7) not null,
-  base_allocation  bigint not null default 0,
-  rollover_amount  bigint not null default 0,
-  total_available  bigint generated always as (base_allocation + rollover_amount) stored,
-  spent            bigint not null default 0,
-  unique (user_id, sub_category_id, month)
-);
-
-create index idx_monthly_budgets_user_month on public.monthly_budgets(user_id, month);
-
-alter table public.monthly_budgets enable row level security;
-
-create policy "Users can manage own monthly budgets"
-  on public.monthly_budgets for all
-  using (auth.uid() = user_id);
-```
-
-#### 008 — income_events
-
-```sql
-create table public.income_events (
-  id           uuid primary key default gen_random_uuid(),
-  user_id      uuid not null references public.users(id) on delete cascade,
-  amount       bigint not null,
-  currency     text not null default 'EGP',
-  source_name  text,
-  received_at  timestamptz not null default now()
-);
-
-create index idx_income_events_user_id on public.income_events(user_id);
-
-alter table public.income_events enable row level security;
-
-create policy "Users can manage own income events"
-  on public.income_events for all
-  using (auth.uid() = user_id);
-```
-
-#### 009 — allocation_templates
-
-```sql
-create table public.allocation_templates (
-  id             uuid primary key default gen_random_uuid(),
-  user_id        uuid not null references public.users(id) on delete cascade,
-  name           text not null,
-  is_active      boolean not null default false,
-  income_amount  bigint not null default 0,
-  created_at     timestamptz not null default now()
-);
-
-create table public.allocation_items (
-  id                  uuid primary key default gen_random_uuid(),
-  template_id         uuid not null references public.allocation_templates(id) on delete cascade,
-  main_category_id    uuid not null references public.main_categories(id) on delete cascade,
-  amount              bigint not null default 0,
-  percentage          numeric(5,2)
-);
-
-create index idx_allocation_templates_user_id on public.allocation_templates(user_id);
-
-alter table public.allocation_templates enable row level security;
-alter table public.allocation_items enable row level security;
-
-create policy "Users can manage own allocation templates"
-  on public.allocation_templates for all
-  using (auth.uid() = user_id);
-
-create policy "Users can manage own allocation items"
-  on public.allocation_items for all
-  using (
-    exists (
-      select 1 from public.allocation_templates t
-      where t.id = allocation_items.template_id
-        and t.user_id = auth.uid()
-    )
-  );
-```
-
-#### 010 — subscriptions_tracked
-
-```sql
-create table public.subscriptions_tracked (
-  id                  uuid primary key default gen_random_uuid(),
-  user_id             uuid not null references public.users(id) on delete cascade,
-  sub_category_id     uuid references public.sub_categories(id) on delete set null,
-  name                text not null,
-  amount              bigint not null,
-  currency            text not null default 'EGP',
-  billing_cycle       text not null check (billing_cycle in ('monthly','yearly')),
-  next_renewal_date   date not null,
-  is_active           boolean not null default true,
-  created_at          timestamptz not null default now()
-);
-
-create index idx_subscriptions_user_id on public.subscriptions_tracked(user_id);
-
-alter table public.subscriptions_tracked enable row level security;
-
-create policy "Users can manage own subscriptions"
-  on public.subscriptions_tracked for all
-  using (auth.uid() = user_id);
-```
-
-#### 011 — sms_rules
-
-```sql
-create table public.sms_rules (
-  id               uuid primary key default gen_random_uuid(),
-  user_id          uuid not null references public.users(id) on delete cascade,
-  sender_name      text not null,
-  keyword          text,
-  sub_category_id  uuid references public.sub_categories(id) on delete set null,
-  created_at       timestamptz not null default now()
-);
-
-create index idx_sms_rules_user_id on public.sms_rules(user_id);
-
-alter table public.sms_rules enable row level security;
-
-create policy "Users can manage own SMS rules"
-  on public.sms_rules for all
-  using (auth.uid() = user_id);
-```
-
-#### 012 — user_subscriptions (RevenueCat webhook target)
-
-```sql
-create table public.user_subscriptions (
-  id                   uuid primary key default gen_random_uuid(),
-  user_id              uuid not null references public.users(id) on delete cascade,
-  revenuecat_app_user_id text not null,
-  entitlement          text not null default 'pro',
-  is_active            boolean not null default false,
-  expires_at           timestamptz,
-  updated_at           timestamptz not null default now(),
-  unique (user_id)
-);
-
-alter table public.user_subscriptions enable row level security;
-
-create policy "Users can read own subscription"
-  on public.user_subscriptions for select
-  using (auth.uid() = user_id);
-```
-
----
-
-### Post-Migration Checklist (run via MCP after all blocks)
-
-Claude Code must verify the following using the Supabase MCP server after migrations complete:
-
-```sql
--- Confirm all 12 tables exist
-select table_name from information_schema.tables
-where table_schema = 'public'
-order by table_name;
-
--- Confirm RLS is enabled on all tables
-select tablename, rowsecurity from pg_tables
-where schemaname = 'public'
-order by tablename;
-
--- Confirm all indexes exist
-select indexname, tablename from pg_indexes
-where schemaname = 'public'
-order by tablename;
-```
-
-If any table, RLS flag, or index is missing — re-run the relevant migration block via MCP before proceeding.
+> All 031 migrations live in `vault/supabase/migrations.sql`. Apply via Supabase MCP only — never manually.
+> Schema tables: users, user_settings, main_categories, sub_categories, accounts, transactions, monthly_budgets, income_events, allocation_templates, allocation_items, subscriptions_tracked, sms_rules, user_subscriptions, goals, goal_transactions, notifications.
+> To apply: connect Supabase MCP server, run `vault/supabase/migrations.sql` blocks in order, enable RLS on every table.
 
 ---
 
 ## Project Structure
 
+The app code lives inside the `vault/` subdirectory.
+
 ```
 vault/
-├── app/                        # Expo Router screens
+├── app/                              # Expo Router screens
+│   ├── _layout.tsx                   # Root layout — providers, deep link handler, auth gate
+│   ├── +not-found.tsx
+│   ├── notifications.tsx             # In-app notification center
+│   ├── paywall.tsx                   # RevenueCat paywall modal
 │   ├── (auth)/
-│   │   ├── login.tsx
-│   │   └── signup.tsx
-│   ├── (auth)/
-│   │   └── sign-in.tsx
+│   │   ├── _layout.tsx
+│   │   ├── sign-in.tsx
+│   │   └── forgot-password.tsx
 │   ├── (tabs)/
-│   │   ├── index.tsx           # Dashboard / Home
-│   │   ├── budget.tsx          # Category budgets + rollovers + goals
-│   │   ├── trends.tsx          # Analytics / spending trends
-│   │   ├── subscriptions.tsx   # Subscription tracker + calendar
-│   │   └── settings.tsx        # Profile, allocation, SMS rules
+│   │   ├── _layout.tsx               # Custom FloatingTabBar wiring
+│   │   ├── index.tsx                 # Dashboard / Home
+│   │   ├── budget.tsx                # Category budgets + rollovers + goals
+│   │   ├── trends.tsx                # Analytics / spending trends
+│   │   ├── subscriptions.tsx         # Subscription tracker + calendar
+│   │   └── settings.tsx              # Profile, allocation, SMS rules
+│   ├── accounts/
+│   │   └── add.tsx                   # Add bank/wallet/cash account
+│   ├── budget/
+│   │   ├── add-goal.tsx
+│   │   ├── add-category.tsx
+│   │   ├── add-subcategory.tsx
+│   │   ├── set-budget.tsx
+│   │   └── goal/
+│   │       └── [id].tsx              # Goal detail page
 │   ├── transaction/
-│   │   └── [id].tsx
+│   │   └── [id].tsx                  # Transaction detail
+│   ├── transactions/
+│   │   └── index.tsx                 # Full transaction list
 │   ├── subscriptions/
-│   │   ├── add.tsx             # Grid browser for adding subscriptions
-│   │   └── [id].tsx            # Edit subscription screen
+│   │   ├── add.tsx                   # Catalogue browser for adding subscriptions
+│   │   └── [id].tsx                  # Edit subscription screen
+│   ├── trends/
+│   │   └── [category].tsx            # Per-category drill-down
+│   ├── settings/
+│   │   ├── edit-profile.tsx
+│   │   ├── monthly-income.tsx
+│   │   ├── allocation.tsx
+│   │   ├── budget-reset-day.tsx
+│   │   ├── shortcut-setup.tsx
+│   │   ├── merchant-categories.tsx
+│   │   ├── currency.tsx
+│   │   ├── notifications.tsx
+│   │   ├── about.tsx
+│   │   └── export.tsx
 │   └── onboarding/
 │       ├── welcome.tsx
 │       ├── name.tsx
 │       ├── income.tsx
 │       ├── income-date.tsx
 │       ├── allocation.tsx
-│       ├── shortcut-setup.tsx  # Covers Apple Pay + Bank SMS + InstaPay in one screen
+│       ├── shortcut-setup.tsx        # Apple Pay + Bank SMS + InstaPay unified screen
 │       └── complete.tsx
 ├── components/
-│   ├── ui/                     # Reusable primitives
-│   ├── transactions/
-│   ├── budget/
+│   ├── ui/                           # Reusable primitives (Text, Card, Badge, FloatingTabBar, etc.)
+│   ├── transactions/                 # TransactionRow, AddTransactionSheet, CategoryAccordionPicker
+│   ├── budget/                       # CategoryRow, MainCategoryAccordion, GoalMiniCard, SummaryRing
 │   └── charts/
 ├── lib/
-│   ├── supabase.ts
-│   ├── revenuecat.ts
-│   ├── sms-parser.ts           # Regex/AI SMS parsing logic
-│   └── budget-engine.ts        # Rollover + allocation logic
-├── stores/                     # Zustand stores (small global state)
-│   ├── auth.store.ts
-│   ├── budget.store.ts
-│   └── transactions.store.ts
-├── redux/                      # Redux Toolkit (app-wide complexity)
+│   ├── supabase.ts                   # Supabase client with secure storage adapter
+│   ├── revenuecat.ts                 # RevenueCat SDK wrapper
+│   ├── sms-parser.ts                 # Bank SMS regex parsing (12 banks)
+│   ├── sms-categorizer.ts            # 4-tier auto-categorization pipeline
+│   ├── sms-processor.ts              # SMS orchestrator (parse → categorize → insert)
+│   ├── budget-engine.ts              # Rollover + allocation logic
+│   ├── currency.ts                   # Multi-currency exchange rates (8 currencies, 24h cache)
+│   ├── export.ts                     # CSV / PDF export
+│   ├── voice-parser.ts               # Speech-to-transaction parser
+│   └── i18n.ts                       # i18n-js initialization
+├── stores/                           # Zustand stores
+│   ├── auth.store.ts                 # Session + user
+│   ├── ui.store.ts                   # Locale, displayCurrency, exchangeRates, transaction sheet
+│   └── notifications.store.ts        # In-app notification list + unread count
+├── redux/                            # Redux Toolkit — onboarding only
 │   ├── store.ts
-│   ├── slices/
-│   │   ├── budgetSlice.ts
-│   │   ├── categoriesSlice.ts
-│   │   └── allocationSlice.ts
-│   └── middleware/
-├── hooks/
+│   └── slices/
+│       └── onboardingSlice.ts
+├── hooks/                            # 16 custom hooks (useTransactions, useMonthlyBudgets, etc.)
 ├── constants/
-│   ├── categories.ts           # Default category definitions
-│   └── banks.ts                # Egyptian bank SMS patterns
+│   ├── tokens.ts                     # Design tokens (colors, spacing, radii, PILL_CLEARANCE)
+│   ├── categories.ts                 # 13 default main categories + 50+ sub-categories
+│   ├── banks.ts                      # 12 Egyptian banks + sender map + merchant keywords
+│   └── subscriptions.ts              # 60+ app catalogue across 12 sections
+├── locales/
+│   ├── en.json
+│   └── ar.json
+├── supabase/
+│   ├── migrations.sql                # All 25 migrations — single file, run in order
+│   └── functions/
+│       └── process-referral/
+│           └── index.ts              # Edge function: grant 1 month Pro on referral
+├── plugins/
+│   └── with-process-sms-intent/      # Custom Expo plugin for Android SMS intent
 └── CLAUDE.md
 ```
 
@@ -687,7 +377,7 @@ vault/
 
 ## UI & Styling System
 
-Vault's visual target is a Revolut-grade light theme: warm off-white surfaces, earthy neutral tones, and a single strong emerald accent. Every library below serves a specific role — do not substitute without good reason.
+Khaznety's visual target is a Revolut-grade light theme: warm off-white surfaces, earthy neutral tones, and a single strong emerald accent. Every library below serves a specific role — do not substitute without good reason.
 
 ---
 
@@ -713,6 +403,7 @@ export const colors = {
 
   // Accent — Emerald
   accent:        '#1A7A52',  // primary buttons, active tab, links, badges
+  accentDark:    '#0D3D28',  // dark green used in sign-in header, deep backgrounds
   accentLight:   '#EAF4EE',  // tinted backgrounds on accent elements
   accentBorder:  '#B6DEC8',  // borders on accent-tinted cards
 
@@ -1019,7 +710,7 @@ const { control, handleSubmit, formState: { errors } } = useForm<AddExpenseForm>
 
 Form input style (NativeWind):
 ```tsx
-// Standard input — matches Vault's warm surface style
+// Standard input — matches Khaznety's warm surface style
 <Controller
   control={control}
   name="merchant"
@@ -1061,32 +752,13 @@ These specific patterns define the Revolut aesthetic and must be replicated cons
 
 ---
 
-### Package Installation Summary
-
-```bash
-# Core styling & animation
-npx expo install nativewind tailwindcss
-npx expo install react-native-reanimated
-npx expo install react-native-gesture-handler
-
-# UI components
-npx expo install @gorhom/bottom-sheet
-npx expo install react-native-svg
-npm install lucide-react-native
-
-# Charts
-npx expo install victory-native @shopify/react-native-skia
-
-# Forms
-npm install react-hook-form zod @hookform/resolvers
-```
 
 
 ---
 
 ### 8. Floating Pill Tab Bar
 
-Vault uses a **transparent frosted floating pill** that levitates above the screen content and blends with the warm off-white UI. There is no footer, no background bar, no separator line — the pill is the only navigation element and it sits consistently above every screen.
+Khaznety uses a **transparent frosted floating pill** that levitates above the screen content and blends with the warm off-white UI. There is no footer, no background bar, no separator line — the pill is the only navigation element and it sits consistently above every screen.
 
 #### Core Rules
 - **No tab bar container** — never render a background view, footer, or bar behind the pill
@@ -1232,7 +904,7 @@ Export a shared constant so every screen uses the same value — never hardcode 
 
 ```ts
 // constants/tokens.ts
-export const PILL_CLEARANCE = 52 + 12 + 34 // pill height + offset + extra breathing room = ~98
+export const PILL_CLEARANCE = 80 // pill height (36) + bottom offset (12) + extra (16) + safe area handled separately
 // Use as: contentContainerStyle={{ paddingBottom: PILL_CLEARANCE + insets.bottom }}
 ```
 
@@ -1280,13 +952,13 @@ Use the right tool for the right scope — do not reach for a heavier solution w
 | **UI / Local** | `useState` / `useReducer` | Component-level ephemeral state — modals open/closed, form input, loading spinners, tab selection |
 | **Server Data** | React Query (`@tanstack/react-query`) | All data fetched from Supabase — transactions, categories, budgets. Handles caching, background refetch, pagination, and optimistic updates |
 | **Small Global** | Zustand | Lightweight cross-component state that doesn't belong to the server — current selected month, active account filter, notification badge count, auth user object |
-| **App-Wide Complexity** | Redux Toolkit | Complex, interconnected state with business logic — budget engine state (allocation templates, rollover calculations across categories), multi-step onboarding wizard, offline queue of pending transactions |
+| **Multi-Step Flows** | Redux Toolkit | Multi-step onboarding wizard state — captures firstName, incomeAmount, incomeDate, allocations, shortcutSkipped across screens before committing to Supabase |
 
 ### Rules
 - Default to `useState` first. Only promote to a higher layer if state genuinely needs to be shared or persisted.
 - React Query is the source of truth for anything that lives in Supabase. Do not duplicate server data into Zustand or Redux.
-- Redux slices should contain pure reducer logic — no direct Supabase calls inside reducers. Use Redux Thunks or RTK Query for async if needed.
-- Zustand stores should be small and focused — one store per domain (auth, UI preferences, filters).
+- Redux is used **only** for the onboarding slice (`onboardingSlice`). Budget logic runs client-side in `lib/budget-engine.ts` and writes directly to Supabase via React Query mutations.
+- Zustand stores are small and focused: `auth.store` (session/user), `ui.store` (locale, currency, exchange rates, transaction sheet state), `notifications.store` (in-app alerts).
 
 ---
 
@@ -1296,806 +968,35 @@ Use the right tool for the right scope — do not reach for a heavier solution w
 
 ## Egyptian Bank SMS Regex Patterns
 
-All Egyptian bank SMS messages follow predictable structures. The parser lives in `lib/sms-parser.ts` and must handle both Arabic and English SMS formats since banks send both.
-
-### Key Parser Rules
-
-- All monetary amounts stored as **integers (piastres)** — multiply parsed float by 100
-- Amount separators vary: `1,250.00` or `1250.50` or `١٬٢٥٠` (Arabic-Indic numerals)
-- Always strip commas before parsing: `"1,250.00".replace(/,/g, '')`
-- Arabic-Indic digits (`٠١٢٣٤٥٦٧٨٩`) must be normalized to Western digits before regex runs
-- Transaction type: look for debit keywords first — if none found, treat as credit
-- `account_last4` is optional — not all banks include it in every message
-
-### Digit Normalizer (run on every SMS before any regex)
-
-```ts
-// lib/sms-parser.ts
-export function normalizeArabicDigits(str: string): string {
-  return str.replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
-}
-
-export function parseAmount(raw: string): number {
-  // returns integer piastres
-  const cleaned = raw.replace(/,/g, '').trim()
-  return Math.round(parseFloat(cleaned) * 100)
-}
-```
+> Full implementation in `vault/lib/sms-parser.ts`. Supports: CIB, NBE (National Bank of Egypt), Banque Misr, QNB Al Ahli, HSBC Egypt, Alex Bank, Fawry, Vodafone Cash, InstaPay.
+> Key rules: amounts stored as integers (piastres × 100); Arabic-Indic digits normalised before parsing; `rawMessage` is never stored in DB — only parsed fields go to `transactions`.
 
 ---
 
-### Bank Patterns
+## Screen Map
 
-#### CIB (Commercial International Bank)
-- **SMS sender**: `CIB` or `CIB-Egypt`
-- **Language**: English
+All screens are implemented. Reference these files when editing UI:
 
-```ts
-// Debit — card purchase
-// "Your CIB account XXXX1234 has been debited EGP 1,250.00 at CARREFOUR on 20/03/2026"
-/your cib (?:account|card)[^\d]*(\d{4}).*?debited\s+egp\s+([\d,]+\.?\d*)\s+at\s+(.+?)\s+on/i
-
-// Credit — incoming transfer or salary
-// "Your CIB account XXXX1234 has been credited EGP 30,000.00 on 20/03/2026"
-/your cib (?:account|card)[^\d]*(\d{4}).*?credited\s+egp\s+([\d,]+\.?\d*)/i
-
-// Balance alert
-// "CIB: Available balance for account XXXX1234 is EGP 24,350.50"
-/available balance for (?:account|card)[^\d]*(\d{4}).*?egp\s+([\d,]+\.?\d*)/i
-```
-
-#### NBE (National Bank of Egypt)
-- **SMS sender**: `NBE` or `19623`
-- **Language**: Arabic and English
-
-```ts
-// Arabic debit
-// "تم خصم مبلغ ١٬٢٥٠٫٠٠ ج.م من حسابك رقم XXXX1234 في CARREFOUR"
-/تم خصم مبلغ\s*([\d,٠-٩٬٫]+)\s*ج\.?م.*?حساب[كـ]?\s*(?:رقم\s*)?(?:XXXX)?(\d{4})?.*?في\s+(.+)/
-
-// Arabic credit
-// "تم إيداع مبلغ ٣٠٬٠٠٠٫٠٠ ج.م في حسابك رقم XXXX1234"
-/تم إيداع مبلغ\s*([\d,٠-٩٬٫]+)\s*ج\.?م.*?حساب[كـ]?\s*(?:رقم\s*)?(?:XXXX)?(\d{4})?/
-
-// English debit
-// "NBE: Your account XXXX1234 debited EGP 1,250.00 at CARREFOUR. Balance: EGP 23,100.00"
-/your account[^\d]*(\d{4})\s+debited\s+egp\s+([\d,]+\.?\d*)\s+at\s+(.+?)(?:\.|balance)/i
-
-// English credit
-// "NBE: Your account XXXX1234 credited EGP 30,000.00."
-/your account[^\d]*(\d{4})\s+credited\s+egp\s+([\d,]+\.?\d*)/i
-```
-
-#### Banque Misr
-- **SMS sender**: `BanqueMisr` or `بنك مصر`
-- **Language**: Arabic and English
-
-```ts
-// Arabic debit
-// "بنك مصر: تم الخصم من حسابك ****1234 بمبلغ 850.00 جنيه في Starbucks"
-/تم الخصم من حساب[كـ]?\s*\*{0,4}(\d{4})\s+بمبلغ\s*([\d,\.]+)\s*جنيه\s+في\s+(.+)/
-
-// Arabic credit
-// "بنك مصر: تم الإيداع في حسابك ****1234 بمبلغ 5,000.00 جنيه"
-/تم الإيداع في حساب[كـ]?\s*\*{0,4}(\d{4})\s+بمبلغ\s*([\d,\.]+)\s*جنيه/
-
-// English
-// "Banque Misr: Debit EGP 850.00 from account ending 1234 at Starbucks. Bal: EGP 23,500.00"
-/debit\s+egp\s+([\d,]+\.?\d*)\s+from account ending\s+(\d{4})\s+at\s+(.+?)(?:\.|bal)/i
-```
-
-#### QNB Al Ahli
-- **SMS sender**: `QNBAlahli` or `QNB`
-- **Language**: English (primarily)
-
-```ts
-// Debit
-// "QNB Alahli: EGP 1,250.00 debited from your account *1234 at IKEA on 20/03/2026. Bal: EGP 18,750.00"
-/egp\s+([\d,]+\.?\d*)\s+debited from your account[^\d]*(\d{4})\s+at\s+(.+?)\s+on/i
-
-// Credit
-// "QNB Alahli: EGP 30,000.00 credited to your account *1234 on 20/03/2026"
-/egp\s+([\d,]+\.?\d*)\s+credited to your account[^\d]*(\d{4})/i
-```
-
-#### HSBC Egypt
-- **SMS sender**: `HSBC`
-- **Language**: English
-
-```ts
-// Debit
-// "HSBC: A transaction of EGP 1,250.00 has been made on your card ending 1234 at CARREFOUR"
-/transaction of egp\s+([\d,]+\.?\d*)\s+has been made on your card ending\s+(\d{4})\s+at\s+(.+)/i
-
-// Credit
-// "HSBC: EGP 30,000.00 has been deposited to your account ending 1234"
-/egp\s+([\d,]+\.?\d*)\s+has been deposited to your account ending\s+(\d{4})/i
-```
-
-#### Alex Bank
-- **SMS sender**: `AlexBank` or `Alex Bank`
-- **Language**: Arabic and English
-
-```ts
-// Arabic debit
-// "بنك الإسكندرية: خصم ١٬٢٥٠٫٠٠ ج.م من بطاقتك **** ١٢٣٤ في CARREFOUR"
-/خصم\s*([\d,٠-٩٬٫]+)\s*ج\.?م\s+من\s+بطاقت[كـ]?\s*\*{0,4}\s*(\d{4})\s+في\s+(.+)/
-
-// English debit
-// "AlexBank: Debit EGP 1,250.00 on card *1234 at CARREFOUR. Available: EGP 18,750.00"
-/debit egp\s+([\d,]+\.?\d*)\s+on card[^\d]*(\d{4})\s+at\s+(.+?)(?:\.|available)/i
-```
-
-#### Fawry
-- **SMS sender**: `Fawry` or `15033`
-- **Language**: Arabic and English
-
-```ts
-// Payment confirmation
-// "Fawry: Payment of EGP 250.00 to Vodafone completed successfully. Ref: 123456789"
-/payment of egp\s+([\d,]+\.?\d*)\s+to\s+(.+?)\s+completed/i
-
-// Arabic payment
-// "فوري: تم سداد 250.00 جنيه لـ فودافون بنجاح. رقم العملية: 123456789"
-/تم سداد\s*([\d,\.]+)\s*جنيه\s+لـ?\s*(.+?)\s+بنجاح/
-```
-
-#### Vodafone Cash
-- **SMS sender**: `VFCash` or `Vodafone`
-- **Language**: Arabic and English
-
-```ts
-// Arabic transfer received
-// "فودافون كاش: استلمت 500.00 جنيه من 01012345678 رصيدك 1,500.00 جنيه"
-/استلمت\s*([\d,\.]+)\s*جنيه\s+من\s+(\d{11})/
-
-// Arabic payment made
-// "فودافون كاش: دفعت 250.00 جنيه لـ Carrefour رصيدك 1,250.00 جنيه"
-/دفعت\s*([\d,\.]+)\s*جنيه\s+لـ?\s*(.+?)\s+رصيد[كـ]?/
-
-// English
-// "VF Cash: You sent EGP 500.00 to 01012345678. Your balance is EGP 1,500.00"
-/you sent egp\s+([\d,]+\.?\d*)\s+to\s+(\d{11})/i
-```
-
-#### InstaPay
-- **SMS sender**: `InstaPay` or `IPN`
-- **Language**: Arabic and English
-
-```ts
-// Received
-// "InstaPay: You received EGP 2,000.00 from Ahmed Mohamed. Balance: EGP 5,500.00"
-/you received egp\s+([\d,]+\.?\d*)\s+from\s+(.+?)(?:\.|balance)/i
-
-// Sent
-// "InstaPay: You sent EGP 1,000.00 to Sara Ali. Balance: EGP 4,500.00"
-/you sent egp\s+([\d,]+\.?\d*)\s+to\s+(.+?)(?:\.|balance)/i
-
-// Arabic received
-// "إنستاباي: استلمت 2,000.00 جنيه من أحمد محمد. رصيدك: 5,500.00 جنيه"
-/استلمت\s*([\d,\.]+)\s*جنيه\s+من\s+(.+?)(?:\.|رصيد)/
-```
+| Screen | File | Notes |
+|---|---|---|
+| Home (Dashboard) | `app/(tabs)/index.tsx` | Balance hero, quick actions, category cards, recent transactions, goals scroll, renewal alert |
+| Budget | `app/(tabs)/budget.tsx` | Segments: Budgets · Goals · Rollovers; month selector; summary ring |
+| Trends | `app/(tabs)/trends.tsx` | Period selector; bar chart; category breakdown; top merchants; savings line chart |
+| Subscriptions + Bills | `app/(tabs)/subscriptions.tsx` | Segments: Subscriptions · Bills; renewal calendar strip |
+| Settings | `app/(tabs)/settings.tsx` | Profile header; budget, automation, app, account sections |
+| Add Transaction | `components/transactions/AddTransactionSheet.tsx` | Bottom sheet, snap 55%/92%, tabs: Expense · Income · Transfer |
+| Goal Detail | `app/budget/goal/[id].tsx` | Progress, contribution history, add funds sheet |
+| Transaction Detail | `app/transaction/[id].tsx` | |
+| Add Bill | `app/subscriptions/add-bill.tsx` | Provider catalogue grid + ref input (number-pad) |
 
 ---
 
-### Full Parser Implementation
-
-```ts
-// lib/sms-parser.ts
-
-export interface ParsedTransaction {
-  amount: number          // integer piastres
-  type: 'debit' | 'credit'
-  merchant: string | null
-  accountLast4: string | null
-  bank: string
-  rawMessage: string
-}
-
-const DEBIT_KEYWORDS = ['debited', 'debit', 'خصم', 'تم الخصم', 'دفعت', 'you sent', 'payment of']
-const CREDIT_KEYWORDS = ['credited', 'credit', 'إيداع', 'تم الإيداع', 'استلمت', 'you received', 'deposited']
-
-export function normalizeArabicDigits(str: string): string {
-  return str.replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
-            .replace(/٬/g, ',')
-            .replace(/٫/g, '.')
-}
-
-function detectType(body: string): 'debit' | 'credit' {
-  const lower = body.toLowerCase()
-  if (DEBIT_KEYWORDS.some(k => lower.includes(k))) return 'debit'
-  if (CREDIT_KEYWORDS.some(k => lower.includes(k))) return 'credit'
-  return 'debit' // safe default
-}
-
-function extractAmount(body: string): number | null {
-  // Matches: 1,250.00 | 1250 | 1,250 | 30,000.50
-  const match = body.match(/(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)/)
-  if (!match) return null
-  return parseAmount(match[1])
-}
-
-function parseAmount(raw: string): number {
-  return Math.round(parseFloat(raw.replace(/,/g, '')) * 100)
-}
-
-export function parseSMS(sender: string, body: string, bank: string): ParsedTransaction | null {
-  const normalized = normalizeArabicDigits(body)
-  const type = detectType(normalized)
-
-  // Try bank-specific patterns first, fall back to generic extraction
-  const amount = extractAmount(normalized)
-  if (!amount || amount <= 0) return null
-
-  // Extract merchant — text after "at", "في", "لـ", "to" keywords
-  const merchantMatch = normalized.match(
-    /(?:at|في|لـ?|to)\s+([A-Za-zأ-ي][A-Za-zأ-ي\s]{1,40}?)(?:\s+on|\s+\.|,|$)/i
-  )
-  const merchant = merchantMatch ? merchantMatch[1].trim() : null
-
-  // Extract account last 4
-  const last4Match = normalized.match(/(?:XXXX|\*{1,4})(\d{4})/)
-  const accountLast4 = last4Match ? last4Match[1] : null
-
-  return {
-    amount,
-    type,
-    merchant,
-    accountLast4,
-    bank,
-    rawMessage: body, // store original, not normalized — never store in DB
-  }
-}
-
-// Sender → bank name mapping
-export const SMS_SENDER_MAP: Record<string, string> = {
-  'CIB':         'CIB',
-  'CIB-Egypt':   'CIB',
-  'NBE':         'NBE',
-  '19623':       'NBE',
-  'BanqueMisr':  'Banque Misr',
-  'بنك مصر':    'Banque Misr',
-  'QNBAlahli':   'QNB Al Ahli',
-  'QNB':         'QNB Al Ahli',
-  'HSBC':        'HSBC Egypt',
-  'AlexBank':    'Alex Bank',
-  'Fawry':       'Fawry',
-  '15033':       'Fawry',
-  'VFCash':      'Vodafone Cash',
-  'InstaPay':    'InstaPay',
-  'IPN':         'InstaPay',
-}
-```
-
-> **Important**: The `rawMessage` field must **never** be stored in the database. Only the parsed fields (`amount`, `type`, `merchant`, `accountLast4`) go into the `transactions` table. This is a hard rule for user privacy.
-
----
-
-## Screen-by-Screen Layout Descriptions
-
-Every screen below is the single source of truth for layout. Claude Code must reference the Paper MCP file for exact spacing values, but use these descriptions to understand content hierarchy and component composition.
-
----
-
-### Screen 1 — Home (index)
-
-**Layout**: `ScrollView` with `pageBg` background. `paddingBottom: PILL_CLEARANCE + insets.bottom`.
-
-```
-StatusBar (light content)
-│
-├── Header Row                          [px-4, pt-2]
-│   ├── Avatar circle (initials)        [w-9 h-9, bg-accent-light, accent text]
-│   ├── "Good morning, [name]"          [flex-1, text-textSecondary, text-sm]
-│   └── Bell icon button                [w-9 h-9, bg-surface rounded-full]
-│
-├── Hero Balance Card                   [mx-3 mt-3, bg-accent, rounded-xl, p-4]
-│   ├── Label: "Total balance"          [text-white/70, text-xs]
-│   ├── Amount: "EGP 24,350"            [text-white, text-3xl, font-bold]
-│   ├── Sub: "March 2026"               [text-white/60, text-xs, mb-3]
-│   └── Stats Row                       [flex-row, gap-2]
-│       ├── Stat pill: Spent            [flex-1, bg-white/15, rounded-lg, p-2]
-│       └── Stat pill: Saved            [flex-1, bg-white/15, rounded-lg, p-2]
-│
-├── Quick-Action Row                    [mx-3 mt-3, flex-row, gap-3]
-│   ├── "+ Expense" button              [flex-1, bg-surface, rounded-card, p-3, items-center]
-│   │   ├── Circle icon (ArrowUpRight)  [w-8 h-8, bg-danger-light, rounded-full]
-│   │   └── Label: "Expense"            [text-xs, text-textSecondary, mt-1]
-│   ├── "+ Income" button               [flex-1, bg-surface, rounded-card, p-3, items-center]
-│   │   ├── Circle icon (ArrowDownLeft) [w-8 h-8, bg-accent-light, rounded-full]
-│   │   └── Label: "Income"             [text-xs, text-textSecondary, mt-1]
-│   └── "+ Transfer" button             [flex-1, bg-surface, rounded-card, p-3, items-center]
-│       ├── Circle icon (ArrowLeftRight)[w-8 h-8, bg-surface-2, rounded-full]
-│       └── Label: "Transfer"           [text-xs, text-textSecondary, mt-1]
-│   (each button opens AddTransactionSheet with the matching tab pre-selected)
-│
-├── Rollover Alert (conditional)        [mx-3 mt-3, bg-accent-light, rounded-lg, p-3]
-│   ├── Green dot                       [w-2 h-2, bg-accent, rounded-full]
-│   └── "[Amount] rolled over in [Cat]" [text-accent, text-sm, flex-1]
-│
-├── Section: "Budgets"                  [section label style, px-4, mt-4]
-│   └── Category Cards List            [mx-3, bg-surface, rounded-card, overflow-hidden]
-│       └── CategoryRow (repeating)
-│           ├── Icon circle             [w-8 h-8, rounded-lg, tinted bg]
-│           ├── Name + sub-label        [flex-1]
-│           ├── Amount remaining        [text-right]
-│           └── Progress bar            [w-12, h-1, bg-border, rounded-full]
-│               └── Fill               [bg-accent | bg-warning | bg-danger]
-│
-├── Section: "Recent transactions"      [section label style, px-4, mt-4]
-│   └── Transaction List               [mx-3, bg-surface, rounded-card, overflow-hidden]
-│       └── TransactionRow (repeating)
-│           ├── Icon circle             [w-8 h-8, rounded-full, bg-accent-light]
-│           ├── Merchant + date/cat     [flex-1]
-│           ├── Amount                  [debit=danger, credit=accent]
-│           └── Source badge           [bg-accent-light, text-accent, text-xs]
-│
-│
-├── Section: "Goals"                    [section label style, px-4, mt-4]
-│   └── Horizontal scroll (FlatList horizontal)
-│       └── GoalMiniCard               [w-40, bg-surface, rounded-card, p-3]
-│           ├── Goal name               [text-sm, font-medium, truncate]
-│           ├── Mini progress bar       [h-1.5, bg-border, mt-2, rounded-full]
-│           │   └── accent fill at goal % complete
-│           └── "X,XXX / X,XXX EGP"    [text-xs, text-textMuted, mt-1]
-│
-├── Upcoming renewal alert (conditional — renewal within 7 days)
-│   └── Alert pill                      [mx-3, bg-warning-light, border-warning/30, rounded-lg, p-3]
-│       ├── Clock icon                  [text-warning, size-14]
-│       └── "[App] renews in N days — EGP X,XXX" [text-sm, text-warning]
-│
-└── FloatingTabBar                      [absolute, bottom]
-```
-
----
-
-### Screen 2 — Budget
-
-**Layout**: `ScrollView`, `pageBg`. Three internal segment tabs: Budgets · Goals · Rollovers.
-
-```
-StatusBar
-│
-├── Screen Title: "Budget"              [px-4, pt-4, text-xl, font-semibold]
-├── Month Selector Row                  [px-4, flex-row, justify-between, mt-2]
-│   ├── ChevronLeft button
-│   ├── "March 2026"                    [text-base, font-medium]
-│   └── ChevronRight button
-│
-├── Summary Ring Card                   [mx-3 mt-3, bg-surface, rounded-card, p-4]
-│   ├── Circular progress ring          [Victory Native donut chart]
-│   ├── Center: spent / total           [absolute center text]
-│   └── Legend row: Spent · Remaining · Rollover
-│
-├── Segment Tabs                        [mx-3 mt-3, flex-row, bg-surface-2, rounded-full, p-1]
-│   ├── "Budgets"   pill                [active: bg-surface, border-border]
-│   ├── "Goals"     pill
-│   └── "Rollovers" pill
-│
-│   ── BUDGETS TAB ──────────────────────────────────────
-│   └── Accordion list                  [mx-3, bg-surface, rounded-card]
-│       └── MainCategoryRow (tap to expand)
-│           ├── Icon + name             [flex-row, items-center]
-│           ├── Total available         [text-right]
-│           ├── Wide progress bar       [h-1.5, full width]
-│           │   Fill: accent <75% / warning 75-99% / danger 100%+
-│           └── Expanded sub-cats       [pl-10, border-l border-border-light]
-│               └── SubCategoryRow
-│                   ├── Name
-│                   ├── "X,XXX / X,XXX EGP"
-│                   └── Mini progress bar
-│
-│   ── GOALS TAB ─────────────────────────────────────────
-│   ├── "+ Add goal" CTA                [mx-3, dashed border, rounded-card, text-accent]
-│   └── GoalCard list                   [mx-3, gap-3]
-│       └── GoalCard                    [bg-surface, rounded-card, p-4]
-│           ├── Goal name               [text-base, font-semibold]
-│           ├── Linked category badge   [bg-accent-light, text-accent, text-xs]
-│           ├── Progress bar            [h-2, bg-border fill to accent]
-│           ├── "X,XXX / X,XXX EGP"    [text-sm]
-│           ├── "~N months to go"       [text-textMuted, text-xs]
-│           └── "+ Add funds" link      [text-accent, text-xs, align-end]
-│
-│   ── ROLLOVERS TAB ──────────────────────────────────────
-│   └── RolloverCard list               [mx-3, gap-3]
-│       └── RolloverCard                [bg-surface, rounded-card, p-4]
-│           ├── Category icon + name
-│           ├── Rollover amount         [text-accent, font-semibold]
-│           ├── "Accumulated over N months" [text-textMuted, text-xs]
-│           └── Action buttons          [flex-row, gap-2, mt-3, flex-wrap]
-│               ├── "Keep"              [pill, bg-surface-2]
-│               ├── "Move to Savings"   [pill, bg-surface-2]
-│               ├── "Redistribute"      [pill, bg-surface-2]
-│               └── "Reset"             [pill, bg-danger-light, text-danger]
-│
-└── FloatingTabBar
-```
-
-**Add Goal bottom sheet** (triggered by "+ Add goal"):
-```
-BottomSheet snap: ['60%', '88%']
-├── Title: "New goal"
-├── Goal name input
-├── Target amount input                 [numeric, EGP]
-├── Linked category picker              [chips — sub-category list]
-├── Monthly contribution input          [auto-calculates months to complete]
-├── "~N months to reach goal"           [live preview, text-textMuted]
-└── CTA: "Create goal"                  [bg-accent]
-```
-
-**Goal data model** (add to Supabase migration 013):
-```sql
-create table public.goals (
-  id                uuid primary key default gen_random_uuid(),
-  user_id           uuid not null references public.users(id) on delete cascade,
-  sub_category_id   uuid references public.sub_categories(id) on delete set null,
-  name              text not null,
-  target_amount     bigint not null,
-  current_amount    bigint not null default 0,
-  monthly_contribution bigint not null default 0,
-  is_complete       boolean not null default false,
-  created_at        timestamptz not null default now()
-);
-alter table public.goals enable row level security;
-create policy "Users can manage own goals"
-  on public.goals for all using (auth.uid() = user_id);
-```
-
----
-
-### Screen 3 — Trends (Analytics)
-
-**Layout**: `ScrollView`, `pageBg`.
-
-```
-StatusBar
-│
-├── Screen Title: "Trends"
-├── Period Selector                     [pill tabs: Week · Month · Year]
-│
-├── Spending Bar Chart                  [mx-3, bg-surface, rounded-card, p-4]
-│   └── Victory Native CartesianChart  [bar: spent=accent, budget=border]
-│
-├── Section: "By category"
-│   └── Category breakdown list        [mx-3, bg-surface, rounded-card]
-│       └── Row: icon · name · bar · amount + %
-│
-├── Section: "Top merchants"
-│   └── Merchant list                  [mx-3, bg-surface, rounded-card]
-│       └── Row: initials circle · name · count · total amount
-│
-├── Section: "Savings rate"
-│   └── Line chart                     [mx-3, bg-surface, rounded-card, p-4]
-│       └── Victory Native Line        [color=accent]
-│
-└── FloatingTabBar
-```
-
----
-
-### Screen 4 — AddTransactionSheet (triggered from Home, NOT a tab)
-
-**Component**: `components/transactions/AddTransactionSheet.tsx`
-**Trigger**: "Expense", "Income", or "Transfer" buttons on the Home screen action row.
-**Container**: `@gorhom/bottom-sheet`, snap points `['55%', '92%']`.
-One sheet, three tab views. Opens with the matching tab active based on which button was tapped.
-`ui.store.ts` holds `activeTransactionType: 'expense' | 'income' | 'transfer' | null`.
-
-```
-Bottom Sheet (over dark overlay)
-│
-├── Handle indicator                    [w-9 h-1, bg-border, self-center, mt-2]
-│
-├── Tab Toggle                          [mx-4, mt-2, flex-row, bg-surface-2, rounded-full, p-1]
-│   ├── "Expense" pill                  [active: bg-surface border-border text-textPrimary]
-│   ├── "Income"  pill
-│   └── "Transfer" pill
-│
-├── Amount Display                      [text-center, pt-4, pb-2]
-│   ├── Currency label: "EGP"           [text-textMuted, text-base]
-│   └── Amount: "0"                     [text-4xl, font-bold, numeric keyboard]
-│
-│   ── EXPENSE TAB ────────────────────────────────────────
-├── "MERCHANT" text input               [px-4, mt-2]
-├── "CATEGORY" accordion picker         [CategoryAccordionPicker]
-│   └── Main category rows (tap to expand → sub-category chips)
-│       Living Expenses expanded by default
-├── Note + date row                     [px-4, mt-2]
-├── CTA: "Save expense"                 [mx-4, mt-4, bg-accent, rounded-btn]
-└── Voice mic button                    [small green circle, bottom-right; stub v1]
-│
-│   ── INCOME TAB ─────────────────────────────────────────
-├── "SOURCE" text input                 [e.g. "Monthly Salary"]
-├── "TO ACCOUNT" picker                 [loads from accounts table]
-├── Note + date row
-└── CTA: "Save income"                  [also inserts income_events row]
-│
-│   ── TRANSFER TAB ───────────────────────────────────────
-├── Sub-label: "Move money between your own accounts"
-├── FROM account card                   [account name, ····last4, balance]
-├── Swap arrow button                   [swaps FROM/TO]
-├── TO account card
-├── Note + date row
-└── CTA: "Transfer [amount] EGP"        [amount-specific label]
-```
-
----
-
-### Screen 5 — Subscriptions (4th tab)
-
-**Layout**: `ScrollView`, `pageBg`. This is the **4th tab** in the floating pill — a first-class screen, not buried in settings.
-
-```
-StatusBar
-│
-├── Screen Title: "Subscriptions"       [px-4, pt-4, text-xl, font-semibold]
-├── "+ Add subscription" button         [top-right, text-accent, text-sm]
-│
-├── Summary Row                         [mx-3 mt-3, flex-row, gap-3]
-│   ├── Metric card: "Monthly total"    [flex-1, bg-surface, rounded-card]
-│   │   └── "EGP 1,250 / mo"
-│   └── Metric card: "Yearly total"     [flex-1, bg-surface, rounded-card]
-│       └── "EGP 9,800 / yr"
-│
-├── Renewal Calendar                    [mx-3 mt-3, bg-surface, rounded-card, p-4]
-│   ├── Label: "UPCOMING RENEWALS"      [section label]
-│   ├── Horizontal date strip           [flat list of next 14 days]
-│   │   └── Day cell: date number + dot if renewal that day
-│   └── Renewals on selected day        [list below strip]
-│       └── Row: icon · name · amount · days until
-│
-├── Section: "Active"                   [section label, mt-4]
-│   └── Subscription list               [mx-3, bg-surface, rounded-card]
-│       └── SubscriptionRow (Swipeable — swipe left to delete)
-│           ├── App icon circle         [w-9 h-9, rounded-xl, bg-surface-2]
-│           ├── Name + billing cycle    [flex-1]
-│           ├── Next renewal date       [text-textMuted, text-xs]
-│           └── Amount                  [text-base, font-semibold]
-│               monthly shown as "/mo", yearly as "/yr"
-│
-├── Section: "Inactive / paused"        [section label, mt-4, if any exist]
-│   └── Same SubscriptionRow but muted opacity (0.5)
-│
-└── FloatingTabBar
-```
-
-**Add Subscription bottom sheet** (triggered by "+ Add subscription"):
-```
-BottomSheet snap: ['65%', '92%']
-├── Title: "Add subscription"
-├── Name input                          [e.g. Netflix, Spotify, ChatGPT]
-├── Amount input                        [numeric, EGP]
-├── Billing cycle picker                [Monthly / Yearly — pill toggle]
-├── Next renewal date picker            [date wheel]
-├── Linked sub-category picker          [chips]
-├── Reminder toggle                     [N days before renewal]
-│   └── Days selector (1 / 3 / 7)       [shown when toggle on]
-└── CTA: "Save subscription"            [bg-accent]
-```
-
-**Subscription data model** — already in migration 010 (`subscriptions_tracked`). Add reminder fields:
-```sql
--- Migration 010 amendment — run via Supabase MCP
-alter table public.subscriptions_tracked
-  add column reminder_enabled boolean not null default true,
-  add column reminder_days_before smallint not null default 3;
-```
-
----
-
-### Screen 6 — Settings
-
-**Layout**: `ScrollView`, `pageBg`.
-
-```
-StatusBar
-│
-├── Avatar + Name header                [px-4, pt-4, flex-row, items-center, gap-3]
-│   ├── Large avatar circle            [w-14 h-14]
-│   └── Name + email
-│
-├── Section: "Budget"
-│   └── Settings list card             [mx-3, bg-surface, rounded-card]
-│       ├── Row: Monthly income         → navigate to income setup
-│       ├── Row: Allocation template    → navigate to allocation screen
-│       └── Row: Budget reset day       → inline picker
-│
-├── Section: "Automation"
-│   └── Settings list card
-│       ├── Row: Apple Pay setup        → onboarding flow re-entry
-│       ├── Row: SMS rules              → sms-rules screen
-│       └── Row: Bank senders           → configure sender list
-│
-├── Section: "Subscription tracking"
-│   └── Settings list card
-│       └── Row: Manage subscriptions   → subscriptions screen
-│
-├── Section: "App"
-│   └── Settings list card
-│       ├── Row: Language (AR / EN)
-│       ├── Row: Currency
-│       └── Row: Notifications
-│
-├── Section: "Account"
-│   └── Settings list card
-│       ├── Row: Vault Pro              → paywall (RevenueCat)
-│       ├── Row: Restore purchases
-│       └── Row: Sign out               [text-danger]
-│
-└── FloatingTabBar
-```
-
----
-
-### Screen 7 — Onboarding Flow
-
-See full breakdown in the Onboarding section below.
-
----
-
-## Onboarding Flow — Step by Step
-
-Onboarding is a **multi-step wizard** managed by Redux (`onboardingSlice`). Each step is a full screen with no tab bar — the `FloatingTabBar` is hidden during onboarding. Progress is shown as a thin dot indicator at the top.
-
-### Step structure
-
-```ts
-// redux/slices/onboardingSlice.ts
-type OnboardingStep =
-  | 'welcome'
-  | 'name'
-  | 'income'
-  | 'income-date'
-  | 'allocation'
-  | 'shortcut-setup'    // Apple Pay + Bank SMS + InstaPay — one unified setup screen
-  | 'complete'          // writes all data to Supabase, routes to (tabs)
-```
-
----
-
-### Step 1 — Welcome
-
-```
-Full screen, pageBg
-│
-├── Vault logo mark                     [center, mt-20, w-16 h-16]
-├── Headline: "Meet Vault"              [text-3xl, font-bold, text-center, mt-6]
-├── Sub: "Your money, finally clear."  [text-textSecondary, text-center, mt-2, px-8]
-│
-├── Feature pills (3 rows)             [mt-10, px-6, gap-3]
-│   ├── "✦  Auto-tracks Apple Pay"
-│   ├── "✦  Reads your bank SMS"
-│   └── "✦  Budgets that roll over"
-│
-└── CTA: "Get started"                 [mx-6, mt-auto, mb-10, bg-accent, rounded-btn]
-```
-
----
-
-### Step 2 — Your Name
-
-```
-│
-├── Back arrow                          [top-left]
-├── Progress dots                       [top-center]
-├── Headline: "What should we call you?"
-├── TextInput (first name)              [large, centered, bg-surface-2]
-│
-└── CTA: "Continue"                    [bottom, disabled until non-empty]
-```
-
----
-
-### Step 3 — Monthly Income
-
-```
-│
-├── Headline: "What's your monthly income?"
-├── Sub: "We use this to set up your budget automatically"
-│
-├── Amount input                        [large centered number input]
-│   ├── Currency: "EGP"
-│   └── TextInput (numeric keyboard)
-│
-├── Helper: "This stays on your device" [text-textMuted, text-xs, text-center]
-│
-└── CTA: "Continue"
-```
-
----
-
-### Step 4 — Income Arrival Date
-
-```
-│
-├── Headline: "When does your salary arrive?"
-│
-├── Date picker grid (1–31)             [mx-4, grid 7 cols, rounded day buttons]
-│   └── Selected day                    [bg-accent, text-white]
-│
-├── Helper: "We'll automatically apply your budget on this day each month"
-│
-└── CTA: "Continue"
-```
-
----
-
-### Step 5 — Budget Allocation
-
-```
-│
-├── Headline: "How do you want to split [income] EGP?"
-├── Sub: "Drag to adjust. Must total 100%."
-│
-├── Allocation sliders (per main category)
-│   └── Row per category:
-│       ├── Icon + name
-│       ├── Slider (Reanimated)
-│       └── Amount display (updates live)
-│
-├── Total bar                           [shows remaining unallocated]
-│   ├── Green fill = allocated
-│   └── "23,000 EGP remaining"
-│
-└── CTA: "Looks good"                  [disabled until 100% allocated]
-```
-
----
-
-### Step 6 — Shortcut Setup
-
-Covers Apple Pay, Bank SMS, InstaPay, and Fawry in a single unified screen. No separate SMS or Apple Pay steps.
-
-```
-│
-├── Back arrow
-├── Progress dots                       [6 dots, 6th active]
-│
-├── Illustration                        [4 transaction source cards arranged around Vault logo]
-│   ├── CIB BANK card — "Debited EGP 850 at Carrefour"
-│   ├── APPLE PAY card — "EGP 120 at Starbucks"
-│   ├── INSTAPAY card — "Received EGP 2,000 from Sara"
-│   └── FAWRY card — "Payment EGP 250 to Vodafone"
-│   └── Vault lock icon [center, bg-accent, rounded-xl]
-│
-├── Headline: "One shortcut,\neverything tracked."
-├── Sub: "Vault reads notifications from your bank, Apple Pay,\nInstaPay, and Fawry — all automatically."
-│
-├── Numbered step list
-│   ├── 1  "Download the Vault Shortcut"    [sub: "Tap 'Get Shortcut' — opens Shortcuts app"]
-│   │                                        [trailing "Get" link — accent color]
-│   ├── 2  "Tap 'Add Shortcut' and allow access"
-│   └── 3  "Make a test transaction to verify"
-│
-├── Privacy note: "No bank login. Your messages are never stored."
-│   [ShieldCheck icon, text-textMuted, text-xs]
-│
-├── CTA: "I've set it up"               [bg-accent, full-width, bottom]
-└── Skip link: "Skip for now"           [text-textMuted, text-center, below CTA]
-```
-
----
-
-### Step 7 — Complete
-
-```
-│
-├── Checkmark circle animation          [Reanimated scale + opacity, bg-accent, white check]
-│   └── Outer glow ring                 [bg-accentLight, larger circle behind]
-│
-├── Headline: "You're all set,"         [text-textPrimary, bold]
-│   └── "[name]!"                       [text-accent, bold — on same line or line below]
-├── Sub: "Your first budget starts today."  [text-textMuted, text-center]
-│
-├── Summary card                        [mx-4, bg-surface, rounded-card, p-4, gap between rows]
-│   ├── Row: $ icon · "Monthly income"  · "[amount] EGP"   [right-aligned, font-semibold]
-│   ├── Row: calendar icon · "Budget resets on" · "[date] of month"
-│   └── Row: shield icon · "Auto-tracking" · chips [Apple Pay] [Bank SMS] [InstaPay]
-│       chips: [bg-accentLight, text-accent, text-xs, rounded-full, px-2 py-0.5]
-│
-└── CTA: "Go to Vault"                 [bg-accent → writes user_settings + default categories
-                                        to Supabase, then router.replace('/(tabs)')]
-```
+## Onboarding Flow
+
+> Implemented in `app/onboarding/`. 7 steps managed by `redux/slices/onboardingSlice.ts`.
+> Steps: welcome → name → income → income-date → allocation → shortcut-setup → complete.
+> "complete" step writes user_settings + default categories to Supabase, then routes to `/(tabs)`.
+> FloatingTabBar hidden during onboarding. Progress shown via `components/ui/ProgressDots.tsx`.
 
 ---
 
@@ -2237,7 +1138,7 @@ Run this checklist on every new screen before marking it complete:
 
 ## Paper MCP — Design Reference
 
-Vault uses **Paper** (paper.design) as its design tool. The Paper MCP server connects Claude Code directly to the open Paper design file, giving it live context on layouts, tokens, spacing, and component structure while building UI.
+Khaznety uses **Paper** (paper.design) as its design tool. The Paper MCP server connects Claude Code directly to the open Paper design file, giving it live context on layouts, tokens, spacing, and component structure while building UI.
 
 ### Setup (Claude Code)
 
@@ -2247,13 +1148,13 @@ Run this once in your terminal to register the Paper MCP server:
 claude mcp add paper --transport http http://127.0.0.1:29979/mcp --scope user
 ```
 
-Then open your Vault design file in **Paper Desktop** — the MCP server starts automatically in the background when a file is open.
+Then open your Khaznety design file in **Paper Desktop** — the MCP server starts automatically in the background when a file is open.
 
 Verify the connection is working by running `/mcp` inside a Claude Code session. Paper should appear in the list of available servers.
 
 ### How It Works
 
-1. Open the Vault `.paper` design file in Paper Desktop
+1. Open the Khaznety `.paper` design file in Paper Desktop
 2. Start a Claude Code session
 3. Claude Code can now call Paper MCP tools to read the open file — frames, layers, tokens, and component structure
 4. When building any screen or component, instruct Claude Code to reference the Paper file first before writing code
@@ -2300,10 +1201,23 @@ Whenever Claude Code is building or updating a screen, it must:
 
 ---
 
-## Out of Scope (v1)
+## Implemented Beyond Original Spec
+
+These features were added and are live in the codebase:
+
+- **Multi-currency display** — 8 currencies (EGP, USD, EUR, SAR, KWD, AED, QAR, BHD) with 24h-cached exchange rates
+- **Voice input** — `expo-speech-recognition` parses spoken transactions in Arabic + English
+- **Export** — CSV and PDF export via `expo-print` + `expo-sharing`
+- **Referral system** — unique `referral_code` per user; edge function grants 1 month Pro on successful referral (max 3 rewards)
+- **Goal transactions** — full contribution/withdrawal history for each goal
+- **Notification preferences** — per-type toggles on `user_settings`
+- **Account sub-type `savings`** — added to accounts.type check constraint
+- **`carry_forward_deficit`** — toggle per sub-category to carry over overspend into next month's budget
+- **`rollover_parked`** — column on monthly_budgets to track mid-month parked rollovers
+
+## Out of Scope (still v1)
 
 - Bank account syncing via open banking / Plaid (no Egyptian open banking infrastructure yet)
 - Receipt scanning / OCR
 - Shared budgets / family accounts
 - Web dashboard
-- Investment tracking
