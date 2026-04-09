@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# iOS / Android native build artifacts
+vault/ios/build/
+vault/ios/Pods/
+vault/android/build/
+vault/android/.gradle/
+vault/android/app/build/
+
+# Expo
+vault/.expo/
+vault/expo-env.d.ts
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor / tool configs (local only)
+.vscode/
+.windsurf/
+.kiro/
+.serena/
+.claude/
+.playwright-mcp/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Worktrees
+.worktrees/
+
+# Misc
+*.tsbuildinfo
