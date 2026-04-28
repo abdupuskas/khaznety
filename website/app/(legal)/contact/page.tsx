@@ -59,17 +59,17 @@ export default function ContactPage() {
   if (state === "success") {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8EFE8] mb-6">
-          <CheckCircle size={32} color="#7A9A7E" strokeWidth={1.75} />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EEF2FF] mb-6">
+          <CheckCircle size={32} color="#111827" strokeWidth={1.75} />
         </div>
-        <h2 className="text-2xl font-bold text-[#1A1A1A]">Message sent!</h2>
-        <p className="mt-3 text-[#5C5850] max-w-sm">
+        <h2 className="text-2xl font-bold text-[#0F172A]">Message sent!</h2>
+        <p className="mt-3 text-[#475569] max-w-sm">
           Thanks for reaching out. We&apos;ll get back to you within 1–2 business days.
         </p>
         <button
           type="button"
           onClick={() => setState("idle")}
-          className="mt-8 rounded-full border border-[#E4DDD2] px-5 py-2 text-sm font-medium text-[#5C5850] hover:bg-[#EEECE7] transition-colors duration-150 cursor-pointer"
+          className="mt-8 rounded-full border border-[#E2E8F0] px-5 py-2 text-sm font-medium text-[#475569] hover:bg-[#EEF2FF] transition-colors duration-150 cursor-pointer"
         >
           Send another message
         </button>
@@ -80,10 +80,10 @@ export default function ContactPage() {
   return (
     <div>
       {/* Header */}
-      <div className="border-b border-[#E4DDD2] pb-8 mb-8">
-        <p className="text-xs font-medium uppercase tracking-widest text-[#9C9485] mb-3">Support</p>
-        <h1 className="text-3xl font-bold text-[#1A1A1A]">Contact Us</h1>
-        <p className="mt-3 text-[#5C5850]">
+      <div className="border-b border-[#E2E8F0] pb-8 mb-8">
+        <p className="text-xs font-medium uppercase tracking-widest text-[#94A3B8] mb-3">Support</p>
+        <h1 className="text-3xl font-bold text-[#0F172A]">Contact Us</h1>
+        <p className="mt-3 text-[#475569]">
           Have a question, feedback, or need help? We&apos;d love to hear from you.
           We typically respond within 1–2 business days.
         </p>
@@ -106,10 +106,10 @@ export default function ContactPage() {
           <a
             key={c.label}
             href={c.href}
-            className="group block rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-4 hover:border-[#A8C4AB] hover:bg-[#E8EFE8] transition-colors duration-150 cursor-pointer"
+            className="group block rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] px-4 py-4 hover:border-[#C7D2FE] hover:bg-[#EEF2FF] transition-colors duration-150 cursor-pointer"
           >
-            <p className="text-xs uppercase tracking-widest text-[#9C9485] mb-1">{c.label}</p>
-            <p className="text-sm font-medium text-[#7A9A7E]">{c.value}</p>
+            <p className="text-xs uppercase tracking-widest text-[#94A3B8] mb-1">{c.label}</p>
+            <p className="text-sm font-medium text-[#111827]">{c.value}</p>
           </a>
         ))}
       </div>
@@ -118,7 +118,7 @@ export default function ContactPage() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label htmlFor="name" className="block text-xs font-medium uppercase tracking-widest text-[#9C9485] mb-1.5">
+            <label htmlFor="name" className="block text-xs font-medium uppercase tracking-widest text-[#94A3B8] mb-1.5">
               Your name <span className="text-[#C0392B]">*</span>
             </label>
             <input
@@ -128,11 +128,11 @@ export default function ContactPage() {
               required
               autoComplete="name"
               placeholder="Abdu Hassan"
-              className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-[#9C9485] outline-none transition-colors duration-150 focus:border-[#7A9A7E] focus:ring-2 focus:ring-[#7A9A7E]/20"
+              className="w-full rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] px-4 py-2.5 text-sm text-[#0F172A] placeholder-[#94A3B8] outline-none transition-colors duration-150 focus:border-[#111827] focus:ring-2 focus:ring-[#111827]/20"
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-xs font-medium uppercase tracking-widest text-[#9C9485] mb-1.5">
+            <label htmlFor="email" className="block text-xs font-medium uppercase tracking-widest text-[#94A3B8] mb-1.5">
               Email address <span className="text-[#C0392B]">*</span>
             </label>
             <input
@@ -142,13 +142,13 @@ export default function ContactPage() {
               required
               autoComplete="email"
               placeholder="abdu@example.com"
-              className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-[#9C9485] outline-none transition-colors duration-150 focus:border-[#7A9A7E] focus:ring-2 focus:ring-[#7A9A7E]/20"
+              className="w-full rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] px-4 py-2.5 text-sm text-[#0F172A] placeholder-[#94A3B8] outline-none transition-colors duration-150 focus:border-[#111827] focus:ring-2 focus:ring-[#111827]/20"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="subject" className="block text-xs font-medium uppercase tracking-widest text-[#9C9485] mb-1.5">
+          <label htmlFor="subject" className="block text-xs font-medium uppercase tracking-widest text-[#94A3B8] mb-1.5">
             Subject <span className="text-[#C0392B]">*</span>
           </label>
           <select
@@ -156,7 +156,7 @@ export default function ContactPage() {
             name="subject"
             required
             defaultValue=""
-            className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] outline-none transition-colors duration-150 focus:border-[#7A9A7E] focus:ring-2 focus:ring-[#7A9A7E]/20 cursor-pointer appearance-none"
+            className="w-full rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] px-4 py-2.5 text-sm text-[#0F172A] outline-none transition-colors duration-150 focus:border-[#111827] focus:ring-2 focus:ring-[#111827]/20 cursor-pointer appearance-none"
           >
             <option value="" disabled>Select a topic…</option>
             <option value="General question">General question</option>
@@ -170,7 +170,7 @@ export default function ContactPage() {
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-xs font-medium uppercase tracking-widest text-[#9C9485] mb-1.5">
+          <label htmlFor="message" className="block text-xs font-medium uppercase tracking-widest text-[#94A3B8] mb-1.5">
             Message <span className="text-[#C0392B]">*</span>
           </label>
           <textarea
@@ -179,7 +179,7 @@ export default function ContactPage() {
             required
             rows={6}
             placeholder="Tell us what's on your mind…"
-            className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-[#9C9485] outline-none transition-colors duration-150 focus:border-[#7A9A7E] focus:ring-2 focus:ring-[#7A9A7E]/20 resize-none"
+            className="w-full rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] px-4 py-2.5 text-sm text-[#0F172A] placeholder-[#94A3B8] outline-none transition-colors duration-150 focus:border-[#111827] focus:ring-2 focus:ring-[#111827]/20 resize-none"
           />
         </div>
 
@@ -192,15 +192,15 @@ export default function ContactPage() {
         <button
           type="submit"
           disabled={state === "submitting"}
-          className="inline-flex items-center gap-2 rounded-full bg-[#7A9A7E] px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[#5E7D63] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
+          className="inline-flex items-center gap-2 rounded-full bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[#0F172A] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111827]"
         >
           <Send size={15} strokeWidth={1.75} />
           {state === "submitting" ? "Sending…" : "Send message"}
         </button>
 
-        <p className="text-xs text-[#9C9485]">
+        <p className="text-xs text-[#94A3B8]">
           By submitting this form you agree to our{" "}
-          <a href="/privacy" className="text-[#7A9A7E] hover:underline cursor-pointer">Privacy Policy</a>.
+          <a href="/privacy" className="text-[#111827] hover:underline cursor-pointer">Privacy Policy</a>.
         </p>
       </form>
     </div>

@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <h2 className="text-lg font-bold text-[#7A9A7E] mb-3">{title}</h2>
-      <div className="space-y-3 text-[15px] leading-relaxed text-[#5C5850]">
+      <h2 className="text-lg font-bold text-[#111827] mb-3">{title}</h2>
+      <div className="space-y-3 text-[15px] leading-relaxed text-[#475569]">
         {children}
       </div>
     </section>
@@ -19,7 +19,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Bullet({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-2.5">
-      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#7A9A7E]" />
+      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#111827]" />
       <span>{children}</span>
     </li>
   );
@@ -29,14 +29,14 @@ export default function TermsPage() {
   return (
     <article>
       {/* Header */}
-      <div className="border-b border-[#E4DDD2] pb-8 mb-2">
-        <p className="text-xs font-medium uppercase tracking-widest text-[#9C9485] mb-3">Legal</p>
-        <h1 className="text-3xl font-bold text-[#1A1A1A]">Terms of Service</h1>
-        <p className="mt-3 text-[#5C5850]">
+      <div className="border-b border-[#E2E8F0] pb-8 mb-2">
+        <p className="text-xs font-medium uppercase tracking-widest text-[#94A3B8] mb-3">Legal</p>
+        <h1 className="text-3xl font-bold text-[#0F172A]">Terms of Service</h1>
+        <p className="mt-3 text-[#475569]">
           Please read these terms carefully before using Hesabaty. By downloading or using the
           app, you agree to be bound by these terms.
         </p>
-        <p className="mt-3 text-sm text-[#9C9485]">
+        <p className="mt-3 text-sm text-[#94A3B8]">
           Last updated: March 2026 &nbsp;·&nbsp; Effective date: March 2026
         </p>
       </div>
@@ -87,8 +87,8 @@ export default function TermsPage() {
           reasonable notice.
         </p>
 
-        <div className="rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] p-5 mt-3">
-          <p className="font-semibold text-[#1A1A1A] mb-3">
+        <div className="rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] p-5 mt-3">
+          <p className="font-semibold text-[#0F172A] mb-3">
             Subscription terms (required Apple disclosure)
           </p>
           <ul className="space-y-2">
@@ -141,7 +141,7 @@ export default function TermsPage() {
               href="https://support.apple.com/en-us/118223"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#7A9A7E] hover:underline cursor-pointer"
+              className="text-[#111827] hover:underline cursor-pointer"
             >
               reportaproblem.apple.com
             </a>
@@ -152,7 +152,7 @@ export default function TermsPage() {
               href="https://support.google.com/googleplay/answer/2479637"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#7A9A7E] hover:underline cursor-pointer"
+              className="text-[#111827] hover:underline cursor-pointer"
             >
               Google Play refund policy
             </a>
@@ -252,7 +252,7 @@ export default function TermsPage() {
           <br />
           <a
             href="mailto:legal@hesabaty.com"
-            className="text-[#7A9A7E] hover:underline cursor-pointer"
+            className="text-[#111827] hover:underline cursor-pointer"
           >
             legal@hesabaty.com
           </a>

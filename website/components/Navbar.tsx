@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Shield, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Features", href: "#features" },
@@ -76,11 +76,11 @@ export default function Navbar() {
         className="mx-auto max-w-6xl rounded-2xl px-4 sm:px-6 transition-shadow duration-200"
         animate={{
           backgroundColor: scrolled
-            ? "rgba(250, 250, 248, 0.92)"
-            : "rgba(250, 250, 248, 0)",
+            ? "rgba(247, 249, 255, 0.92)"
+            : "rgba(247, 249, 255, 0)",
           borderColor: scrolled
-            ? "rgba(228, 221, 210, 1)"
-            : "rgba(228, 221, 210, 0)",
+            ? "rgba(226, 232, 240, 1)"
+            : "rgba(226, 232, 240, 0)",
           backdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
         }}
         transition={
@@ -108,10 +108,8 @@ export default function Navbar() {
             className="flex items-center gap-2 cursor-pointer group"
             aria-label="Hesabaty - back to top"
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#7A9A7E] transition-colors duration-200 group-hover:bg-[#5E7D63]">
-              <Shield size={16} color="#FFFFFF" strokeWidth={2} />
-            </div>
-            <span className="text-lg font-bold text-[#1A1A1A] tracking-tight">
+            <img src="/icon.png" alt="" aria-hidden="true" className="w-8 h-8 rounded-lg" />
+            <span className="text-lg font-bold text-[#0F172A] tracking-tight">
               Hesabaty
             </span>
           </a>
@@ -123,7 +121,7 @@ export default function Navbar() {
                 <a
                   href={link.href}
                   onClick={(e) => handleSmoothScroll(e, link.href)}
-                  className="cursor-pointer px-3 py-2 text-sm font-medium text-[#5C5850] rounded-lg transition-colors duration-200 hover:text-[#1A1A1A] hover:bg-[#EEECE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
+                  className="cursor-pointer px-3 py-2 text-sm font-medium text-[#475569] rounded-lg transition-colors duration-200 hover:text-[#0F172A] hover:bg-[#EEF2FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111827]"
                 >
                   {link.label}
                 </a>
@@ -137,7 +135,7 @@ export default function Navbar() {
             <a
               href="#download"
               onClick={(e) => handleSmoothScroll(e, "#download")}
-              className="hidden sm:inline-flex cursor-pointer items-center px-5 py-2 text-sm font-semibold text-white bg-[#7A9A7E] rounded-full transition-colors duration-200 hover:bg-[#5E7D63] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
+              className="hidden sm:inline-flex cursor-pointer items-center px-5 py-2 text-sm font-semibold text-white bg-[#111827] rounded-full transition-colors duration-200 hover:bg-[#0F172A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111827]"
             >
               Download
             </a>
@@ -146,14 +144,14 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMobileOpen((prev) => !prev)}
-              className="md:hidden cursor-pointer flex items-center justify-center w-10 h-10 rounded-lg transition-colors duration-200 hover:bg-[#EEECE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
+              className="md:hidden cursor-pointer flex items-center justify-center w-10 h-10 rounded-lg transition-colors duration-200 hover:bg-[#EEF2FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111827]"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
             >
               {mobileOpen ? (
-                <X size={20} color="#1A1A1A" strokeWidth={1.75} />
+                <X size={20} color="#0F172A" strokeWidth={1.75} />
               ) : (
-                <Menu size={20} color="#1A1A1A" strokeWidth={1.75} />
+                <Menu size={20} color="#0F172A" strokeWidth={1.75} />
               )}
             </button>
           </div>
@@ -171,7 +169,7 @@ export default function Navbar() {
                   ? { duration: 0 }
                   : { duration: 0.2, ease: "easeOut" }
               }
-              className="md:hidden overflow-hidden border-t border-[#E4DDD2]"
+              className="md:hidden overflow-hidden border-t border-[#E2E8F0]"
             >
               <ul className="flex flex-col gap-1 py-3">
                 {NAV_LINKS.map((link) => (
@@ -179,7 +177,7 @@ export default function Navbar() {
                     <a
                       href={link.href}
                       onClick={(e) => handleSmoothScroll(e, link.href)}
-                      className="cursor-pointer block px-3 py-2.5 text-sm font-medium text-[#5C5850] rounded-lg transition-colors duration-200 hover:text-[#1A1A1A] hover:bg-[#EEECE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
+                      className="cursor-pointer block px-3 py-2.5 text-sm font-medium text-[#475569] rounded-lg transition-colors duration-200 hover:text-[#0F172A] hover:bg-[#EEF2FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111827]"
                     >
                       {link.label}
                     </a>
@@ -189,7 +187,7 @@ export default function Navbar() {
                   <a
                     href="#download"
                     onClick={(e) => handleSmoothScroll(e, "#download")}
-                    className="cursor-pointer flex items-center justify-center mx-3 px-5 py-2.5 text-sm font-semibold text-white bg-[#7A9A7E] rounded-full transition-colors duration-200 hover:bg-[#5E7D63] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
+                    className="cursor-pointer flex items-center justify-center mx-3 px-5 py-2.5 text-sm font-semibold text-white bg-[#111827] rounded-full transition-colors duration-200 hover:bg-[#0F172A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111827]"
                   >
                     Download
                   </a>

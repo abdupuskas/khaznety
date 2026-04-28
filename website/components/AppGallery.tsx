@@ -28,7 +28,7 @@ function PhoneFrame({ file, label, alt }: { file: string; label: string; alt: st
     <div className="flex flex-col items-center gap-3 shrink-0">
       {/* Phone shell */}
       <div
-        className="relative bg-[#5E7D63] shadow-2xl shadow-[#5E7D63]/30"
+        className="relative bg-[#0F172A] shadow-2xl shadow-[#0F172A]/30"
         style={{
           width: PHONE_W,
           height: PHONE_H,
@@ -38,13 +38,13 @@ function PhoneFrame({ file, label, alt }: { file: string; label: string; alt: st
       >
         {/* Notch */}
         <div
-          className="absolute top-0 left-1/2 z-20 -translate-x-1/2 bg-[#5E7D63]"
+          className="absolute top-0 left-1/2 z-20 -translate-x-1/2 bg-[#0F172A]"
           style={{ width: NOTCH_W, height: NOTCH_H, borderBottomLeftRadius: 14, borderBottomRightRadius: 14 }}
         />
 
         {/* Screen inset */}
         <div
-          className="absolute overflow-hidden bg-[#F0EEE9]"
+          className="absolute overflow-hidden bg-[#F7F9FF]"
           style={{
             inset: FRAME_PAD,
             borderRadius: RADIUS_INNER,
@@ -61,7 +61,7 @@ function PhoneFrame({ file, label, alt }: { file: string; label: string; alt: st
         </div>
       </div>
 
-      <span className="text-[13px] font-medium text-[#5C5850]">{label}</span>
+      <span className="text-[13px] font-medium text-[#475569]">{label}</span>
     </div>
   );
 }
@@ -70,22 +70,22 @@ export function AppGallery() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section className="bg-[#FAFAF8] py-20 border-y border-[#E4DDD2] overflow-hidden">
+    <section className="bg-[#FFFFFF] py-20 border-y border-[#E2E8F0] overflow-hidden">
       <div className="max-w-6xl mx-auto px-4">
         <FadeIn className="text-center mb-14">
           <SectionLabel>APP SCREENSHOTS</SectionLabel>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A1A] mt-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] mt-4">
             Every screen, crafted for Egypt
           </h2>
-          <p className="text-[#5C5850] mt-3 max-w-lg mx-auto">
+          <p className="text-[#475569] mt-3 max-w-lg mx-auto">
             Arabic-first, RTL-ready, and designed to feel native on iOS and Android.
           </p>
         </FadeIn>
 
         {/* Scroll container with fade masks */}
         <div className="relative">
-          <div className="pointer-events-none absolute left-0 top-0 bottom-8 w-20 z-10 bg-gradient-to-r from-[#FAFAF8] to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-8 w-20 z-10 bg-gradient-to-l from-[#FAFAF8] to-transparent" />
+          <div className="pointer-events-none absolute left-0 top-0 bottom-8 w-20 z-10 bg-gradient-to-r from-[#FFFFFF] to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-8 w-20 z-10 bg-gradient-to-l from-[#FFFFFF] to-transparent" />
 
           <div
             className="overflow-x-auto -mx-4 px-12"

@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, Smartphone, Play, Heart } from "lucide-react";
+import { Smartphone, Play, Heart } from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
 
 export function CTAFooter() {
@@ -9,7 +9,7 @@ export function CTAFooter() {
   return (
     <>
       {/* CTA Section */}
-      <section id="download" className="bg-[#5E7D63] py-20 px-4">
+      <section id="download" className="bg-[#0F172A] py-20 px-4">
         <FadeIn className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold text-white md:text-4xl">
             Ready to take control?
@@ -22,7 +22,7 @@ export function CTAFooter() {
             <a
               href="#"
               aria-label="Download on the App Store"
-              className="flex cursor-pointer items-center gap-3 rounded-xl bg-white px-6 py-3 font-medium text-[#5E7D63] transition-all duration-200 hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="flex cursor-pointer items-center gap-3 rounded-xl bg-white px-6 py-3 font-medium text-[#0F172A] transition-all duration-200 hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               <Smartphone size={20} strokeWidth={1.75} />
               <span>App Store</span>
@@ -40,12 +40,12 @@ export function CTAFooter() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#5E7D63] px-4 py-8">
+      <footer className="border-t border-white/10 bg-[#0F172A] px-4 py-8">
         <div className="mx-auto max-w-6xl">
           {/* Top row */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Shield size={20} className="text-white" strokeWidth={1.75} />
+              <img src="/icon.png" alt="" aria-hidden="true" className="w-6 h-6 rounded-lg" />
               <span className="text-lg font-bold text-white">Hesabaty</span>
             </div>
             <nav className="flex items-center gap-6">

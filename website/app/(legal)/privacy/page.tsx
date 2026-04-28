@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <h2 className="text-lg font-bold text-[#7A9A7E] mb-3">{title}</h2>
-      <div className="space-y-3 text-[15px] leading-relaxed text-[#5C5850]">
+      <h2 className="text-lg font-bold text-[#111827] mb-3">{title}</h2>
+      <div className="space-y-3 text-[15px] leading-relaxed text-[#475569]">
         {children}
       </div>
     </section>
@@ -19,7 +19,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Bullet({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-2.5">
-      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#7A9A7E]" />
+      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#111827]" />
       <span>{children}</span>
     </li>
   );
@@ -29,14 +29,14 @@ export default function PrivacyPage() {
   return (
     <article>
       {/* Header */}
-      <div className="border-b border-[#E4DDD2] pb-8 mb-2">
-        <p className="text-xs font-medium uppercase tracking-widest text-[#9C9485] mb-3">Legal</p>
-        <h1 className="text-3xl font-bold text-[#1A1A1A]">Privacy Policy</h1>
-        <p className="mt-3 text-[#5C5850]">
+      <div className="border-b border-[#E2E8F0] pb-8 mb-2">
+        <p className="text-xs font-medium uppercase tracking-widest text-[#94A3B8] mb-3">Legal</p>
+        <h1 className="text-3xl font-bold text-[#0F172A]">Privacy Policy</h1>
+        <p className="mt-3 text-[#475569]">
           Hesabaty is committed to protecting your privacy. This policy explains what data we
           collect, why we collect it, and how we keep it safe.
         </p>
-        <p className="mt-3 text-sm text-[#9C9485]">
+        <p className="mt-3 text-sm text-[#94A3B8]">
           Last updated: March 2026 &nbsp;·&nbsp; Effective date: March 2026
         </p>
       </div>
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
         </p>
         <p>
           Questions about this policy? Contact us at{" "}
-          <a href="mailto:privacy@hesabaty.com" className="text-[#7A9A7E] hover:underline cursor-pointer">
+          <a href="mailto:privacy@hesabaty.com" className="text-[#111827] hover:underline cursor-pointer">
             privacy@hesabaty.com
           </a>
           .
@@ -60,7 +60,7 @@ export default function PrivacyPage() {
         <p>We collect only what is necessary to provide the service:</p>
 
         <div className="mt-3">
-          <p className="font-semibold text-[#1A1A1A] mb-2">Account data</p>
+          <p className="font-semibold text-[#0F172A] mb-2">Account data</p>
           <ul className="space-y-1.5">
             <Bullet>Email address (used for authentication and account recovery)</Bullet>
             <Bullet>Display name (optional, used in the app interface)</Bullet>
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
         </div>
 
         <div className="mt-4">
-          <p className="font-semibold text-[#1A1A1A] mb-2">Financial data you enter</p>
+          <p className="font-semibold text-[#0F172A] mb-2">Financial data you enter</p>
           <ul className="space-y-1.5">
             <Bullet>Transaction amounts, dates, merchants, and categories you add manually or via automation</Bullet>
             <Bullet>Budget limits and allocation templates you configure</Bullet>
@@ -77,14 +77,14 @@ export default function PrivacyPage() {
             <Bullet>Goal names and target amounts</Bullet>
             <Bullet>Account balances you record</Bullet>
           </ul>
-          <p className="mt-2 text-sm italic text-[#9C9485]">
+          <p className="mt-2 text-sm italic text-[#94A3B8]">
             All monetary amounts are stored as integers (piastres) to avoid floating-point errors.
             We never store raw bank account numbers or card numbers.
           </p>
         </div>
 
         <div className="mt-4">
-          <p className="font-semibold text-[#1A1A1A] mb-2">Automated tracking data</p>
+          <p className="font-semibold text-[#0F172A] mb-2">Automated tracking data</p>
           <ul className="space-y-1.5">
             <Bullet>
               <strong>Apple Pay (iOS):</strong> When you use the Apple Shortcuts integration,
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
         </div>
 
         <div className="mt-4">
-          <p className="font-semibold text-[#1A1A1A] mb-2">Voice input (optional)</p>
+          <p className="font-semibold text-[#0F172A] mb-2">Voice input (optional)</p>
           <ul className="space-y-1.5">
             <Bullet>
               When you use voice input to add a transaction, your speech is processed locally
@@ -113,7 +113,7 @@ export default function PrivacyPage() {
         </div>
 
         <div className="mt-4">
-          <p className="font-semibold text-[#1A1A1A] mb-2">Usage and device data</p>
+          <p className="font-semibold text-[#0F172A] mb-2">Usage and device data</p>
           <ul className="space-y-1.5">
             <Bullet>App crash reports and diagnostic logs (anonymised)</Bullet>
             <Bullet>Device locale and language preference (to serve the correct language)</Bullet>
@@ -141,7 +141,7 @@ export default function PrivacyPage() {
       <Section title="4. Third-Party Services">
         <p>We use a small number of trusted third-party services to operate Hesabaty:</p>
 
-        <div className="mt-3 rounded-xl border border-[#E4DDD2] overflow-hidden">
+        <div className="mt-3 rounded-xl border border-[#E2E8F0] overflow-hidden">
           {[
             {
               name: "Supabase",
@@ -176,20 +176,20 @@ export default function PrivacyPage() {
           ].map((s, i) => (
             <div
               key={s.name}
-              className={`px-4 py-3 ${i > 0 ? "border-t border-[#E4DDD2]" : ""}`}
+              className={`px-4 py-3 ${i > 0 ? "border-t border-[#E2E8F0]" : ""}`}
             >
               <div className="flex flex-wrap items-start justify-between gap-1">
-                <p className="font-semibold text-[#1A1A1A] text-sm">{s.name}</p>
-                <span className="text-xs text-[#9C9485] bg-[#EEECE7] px-2 py-0.5 rounded-full">
+                <p className="font-semibold text-[#0F172A] text-sm">{s.name}</p>
+                <span className="text-xs text-[#94A3B8] bg-[#EEF2FF] px-2 py-0.5 rounded-full">
                   {s.location}
                 </span>
               </div>
-              <p className="text-sm text-[#5C5850] mt-0.5">{s.purpose}</p>
+              <p className="text-sm text-[#475569] mt-0.5">{s.purpose}</p>
               <a
                 href={s.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[#7A9A7E] hover:underline cursor-pointer mt-0.5 inline-block"
+                className="text-xs text-[#111827] hover:underline cursor-pointer mt-0.5 inline-block"
               >
                 Privacy policy →
               </a>
@@ -241,7 +241,7 @@ export default function PrivacyPage() {
         </ul>
         <p className="mt-3">
           To exercise any of these rights, email us at{" "}
-          <a href="mailto:privacy@hesabaty.com" className="text-[#7A9A7E] hover:underline cursor-pointer">
+          <a href="mailto:privacy@hesabaty.com" className="text-[#111827] hover:underline cursor-pointer">
             privacy@hesabaty.com
           </a>
           . We will respond within 30 days.
@@ -286,7 +286,7 @@ export default function PrivacyPage() {
         <p>
           Hesabaty &mdash; Privacy Enquiries
           <br />
-          <a href="mailto:privacy@hesabaty.com" className="text-[#7A9A7E] hover:underline cursor-pointer">
+          <a href="mailto:privacy@hesabaty.com" className="text-[#111827] hover:underline cursor-pointer">
             privacy@hesabaty.com
           </a>
         </p>

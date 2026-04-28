@@ -7,6 +7,7 @@ import "./globals.css";
 // Inter, drop a `public/fonts/inter.woff2` file and switch to `next/font/local`.
 
 export const metadata: Metadata = {
+  icons: { icon: "/icon.png", apple: "/icon.png" },
   title: "Hesabaty - Your money, finally clear.",
   description:
     "Automated expense tracking for Egypt. Apple Pay, bank SMS, budgets that roll over.",
