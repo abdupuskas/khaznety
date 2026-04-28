@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useState, useEffect } from "react";import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
@@ -10,22 +9,9 @@ const NAV_LINKS = [
   { label: "Pricing", href: "#pricing" },
 ] as const;
 
-const SCROLL_THRESHOLD = 50;
-
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const prefersReducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > SCROLL_THRESHOLD);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Close mobile menu on resize to desktop
   useEffect(() => {
@@ -72,27 +58,8 @@ export default function Navbar() {
       className="fixed top-4 left-4 right-4 z-50"
       initial={false}
     >
-      <motion.nav
-        className="mx-auto max-w-6xl rounded-2xl px-4 sm:px-6 transition-shadow duration-200"
-        animate={{
-          backgroundColor: scrolled
-            ? "rgba(247, 249, 255, 0.92)"
-            : "rgba(247, 249, 255, 0)",
-          borderColor: scrolled
-            ? "rgba(226, 232, 240, 1)"
-            : "rgba(226, 232, 240, 0)",
-          backdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
-        }}
-        transition={
-          prefersReducedMotion
-            ? { duration: 0 }
-            : { duration: 0.25, ease: "easeOut" }
-        }
-        style={{
-          borderWidth: 1,
-          borderStyle: "solid",
-          WebkitBackdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
-        }}
+      <nav
+        className="mx-auto max-w-6xl rounded-2xl px-4 sm:px-6 bg-white border border-[#E2E8F0] shadow-sm"
       >
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
@@ -196,7 +163,7 @@ export default function Navbar() {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.nav>
+      </nav>
     </motion.header>
   );
 }
