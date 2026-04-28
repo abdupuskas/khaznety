@@ -50,7 +50,7 @@ export function CTAFooter() {
             </div>
             <nav className="flex items-center gap-6">
               <a
-                href="/privacy"
+                href="https://hesabatypersonal.vercel.app/privacy"
                 className="cursor-pointer text-sm text-white/60 transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 Privacy

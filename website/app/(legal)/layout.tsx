@@ -37,7 +37,7 @@ export default function LegalLayout({
             &copy; {new Date().getFullYear()} Hesabaty. All rights reserved.
           </p>
           <nav className="flex items-center gap-4">
-            <Link href="/privacy" className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors duration-150 cursor-pointer">
+            <Link href="https://hesabatypersonal.vercel.app/privacy" className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors duration-150 cursor-pointer">
               Privacy Policy
             </Link>
             <Link href="/terms" className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors duration-150 cursor-pointer">

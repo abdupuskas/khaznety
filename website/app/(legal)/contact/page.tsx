@@ -200,7 +200,7 @@ export default function ContactPage() {
 
         <p className="text-xs text-[#94A3B8]">
           By submitting this form you agree to our{" "}
-          <a href="/privacy" className="text-[#111827] hover:underline cursor-pointer">Privacy Policy</a>.
+          <a href="https://hesabatypersonal.vercel.app/privacy" className="text-[#111827] hover:underline cursor-pointer">Privacy Policy</a>.
         </p>
       </form>
     </div>
