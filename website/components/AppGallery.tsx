@@ -6,12 +6,12 @@ import { SectionLabel } from "@/components/ui/SectionLabel";
 import { FadeIn } from "@/components/ui/FadeIn";
 
 const screenshots = [
-  { file: "Onboarding.PNG",    label: "Welcome",       alt: "Khaznety welcome screen — brand identity and sign-in" },
-  { file: "Home.PNG",          label: "Dashboard",     alt: "Khaznety home dashboard — balance, accounts, quick actions" },
-  { file: "Budgets.PNG",       label: "Budget",        alt: "Khaznety budget screen — category ring, rollovers" },
-  { file: "Trends.PNG",        label: "Trends",        alt: "Khaznety analytics screen — monthly spending charts" },
-  { file: "Subscriptions.PNG", label: "Subscriptions", alt: "Khaznety subscriptions screen — renewal tracking" },
-  { file: "Home2.PNG",         label: "Home",          alt: "Khaznety home screen — recent transactions and checklist" },
+  { file: "Onboarding.PNG",    label: "Welcome",       alt: "Hesabaty welcome screen — brand identity and sign-in" },
+  { file: "Home.PNG",          label: "Dashboard",     alt: "Hesabaty home dashboard — balance, accounts, quick actions" },
+  { file: "Budgets.PNG",       label: "Budget",        alt: "Hesabaty budget screen — category ring, rollovers" },
+  { file: "Trends.PNG",        label: "Trends",        alt: "Hesabaty analytics screen — monthly spending charts" },
+  { file: "Subscriptions.PNG", label: "Subscriptions", alt: "Hesabaty subscriptions screen — renewal tracking" },
+  { file: "Home2.PNG",         label: "Home",          alt: "Hesabaty home screen — recent transactions and checklist" },
 ];
 
 // iPhone 16 Pro aspect ratio: 1206 × 2622 ≈ 9:19.5
@@ -28,7 +28,7 @@ function PhoneFrame({ file, label, alt }: { file: string; label: string; alt: st
     <div className="flex flex-col items-center gap-3 shrink-0">
       {/* Phone shell */}
       <div
-        className="relative bg-[#0D3D28] shadow-2xl shadow-[#0D3D28]/30"
+        className="relative bg-[#5E7D63] shadow-2xl shadow-[#5E7D63]/30"
         style={{
           width: PHONE_W,
           height: PHONE_H,
@@ -38,7 +38,7 @@ function PhoneFrame({ file, label, alt }: { file: string; label: string; alt: st
       >
         {/* Notch */}
         <div
-          className="absolute top-0 left-1/2 z-20 -translate-x-1/2 bg-[#0D3D28]"
+          className="absolute top-0 left-1/2 z-20 -translate-x-1/2 bg-[#5E7D63]"
           style={{ width: NOTCH_W, height: NOTCH_H, borderBottomLeftRadius: 14, borderBottomRightRadius: 14 }}
         />
 

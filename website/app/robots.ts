@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://khaznety.com/sitemap.xml",
+    sitemap: "https://hesabaty.com/sitemap.xml",
   };
 }

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Khaznety",
-  description: "Terms and conditions for using Khaznety, including subscription and refund policies.",
+  title: "Terms of Service — Hesabaty",
+  description: "Terms and conditions for using Hesabaty, including subscription and refund policies.",
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <h2 className="text-lg font-bold text-[#1A7A52] mb-3">{title}</h2>
+      <h2 className="text-lg font-bold text-[#7A9A7E] mb-3">{title}</h2>
       <div className="space-y-3 text-[15px] leading-relaxed text-[#5C5850]">
         {children}
       </div>
@@ -19,7 +19,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Bullet({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-2.5">
-      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#1A7A52]" />
+      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#7A9A7E]" />
       <span>{children}</span>
     </li>
   );
@@ -33,7 +33,7 @@ export default function TermsPage() {
         <p className="text-xs font-medium uppercase tracking-widest text-[#9C9485] mb-3">Legal</p>
         <h1 className="text-3xl font-bold text-[#1A1A1A]">Terms of Service</h1>
         <p className="mt-3 text-[#5C5850]">
-          Please read these terms carefully before using Khaznety. By downloading or using the
+          Please read these terms carefully before using Hesabaty. By downloading or using the
           app, you agree to be bound by these terms.
         </p>
         <p className="mt-3 text-sm text-[#9C9485]">
@@ -43,12 +43,12 @@ export default function TermsPage() {
 
       <Section title="1. Acceptance of Terms">
         <p>
-          By accessing or using the Khaznety mobile application ("App") or website
+          By accessing or using the Hesabaty mobile application ("App") or website
           ("Site"), you agree to these Terms of Service ("Terms"). If you do not agree,
           do not use the App or Site.
         </p>
         <p>
-          These Terms form a legally binding agreement between you and Khaznety ("we",
+          These Terms form a legally binding agreement between you and Hesabaty ("we",
           "us", "our"). We may update these Terms at any time. Continued use of the App
           after changes are posted constitutes acceptance.
         </p>
@@ -56,7 +56,7 @@ export default function TermsPage() {
 
       <Section title="2. Eligibility">
         <ul className="space-y-1.5">
-          <Bullet>You must be at least 13 years old to use Khaznety.</Bullet>
+          <Bullet>You must be at least 13 years old to use Hesabaty.</Bullet>
           <Bullet>You must provide accurate and complete registration information.</Bullet>
           <Bullet>You are responsible for maintaining the security of your account credentials.</Bullet>
           <Bullet>You are responsible for all activity that occurs under your account.</Bullet>
@@ -65,11 +65,11 @@ export default function TermsPage() {
 
       <Section title="3. The Service">
         <p>
-          Khaznety is a personal budgeting tool that helps you track expenses, manage budgets,
+          Hesabaty is a personal budgeting tool that helps you track expenses, manage budgets,
           and monitor subscriptions. The App is provided for personal, non-commercial use only.
         </p>
         <p>
-          Khaznety is a financial <strong>tracking</strong> tool, not a financial advisor.
+          Hesabaty is a financial <strong>tracking</strong> tool, not a financial advisor.
           Nothing in the App constitutes financial, investment, tax, or legal advice. You are
           solely responsible for your financial decisions.
         </p>
@@ -79,10 +79,10 @@ export default function TermsPage() {
         </p>
       </Section>
 
-      <Section title="4. Free Plan and Khaznety Pro Subscription">
+      <Section title="4. Free Plan and Hesabaty Pro Subscription">
         <p>
-          Khaznety offers a free tier ("Free Plan") and a paid subscription tier
-          ("Khaznety Pro"). Features available under each plan are described in the App and on
+          Hesabaty offers a free tier ("Free Plan") and a paid subscription tier
+          ("Hesabaty Pro"). Features available under each plan are described in the App and on
           our website. We reserve the right to modify the features available in each plan with
           reasonable notice.
         </p>
@@ -93,7 +93,7 @@ export default function TermsPage() {
           </p>
           <ul className="space-y-2">
             <Bullet>
-              Khaznety Pro is offered as a <strong>monthly</strong> or <strong>annual</strong>{" "}
+              Hesabaty Pro is offered as a <strong>monthly</strong> or <strong>annual</strong>{" "}
               auto-renewing subscription.
             </Bullet>
             <Bullet>
@@ -126,7 +126,7 @@ export default function TermsPage() {
 
       <Section title="5. Cancellation and Refunds">
         <p>
-          You may cancel your Khaznety Pro subscription at any time through your App Store
+          You may cancel your Hesabaty Pro subscription at any time through your App Store
           (iOS) or Google Play (Android) account settings. Cancellation takes effect at the
           end of the current billing period — you retain access to Pro features until then.
         </p>
@@ -141,7 +141,7 @@ export default function TermsPage() {
               href="https://support.apple.com/en-us/118223"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#1A7A52] hover:underline cursor-pointer"
+              className="text-[#7A9A7E] hover:underline cursor-pointer"
             >
               reportaproblem.apple.com
             </a>
@@ -152,7 +152,7 @@ export default function TermsPage() {
               href="https://support.google.com/googleplay/answer/2479637"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#1A7A52] hover:underline cursor-pointer"
+              className="text-[#7A9A7E] hover:underline cursor-pointer"
             >
               Google Play refund policy
             </a>
@@ -180,7 +180,7 @@ export default function TermsPage() {
       <Section title="7. Intellectual Property">
         <p>
           All content in the App — including but not limited to the design, code, graphics,
-          logos, and text — is owned by or licensed to Khaznety and protected by applicable
+          logos, and text — is owned by or licensed to Hesabaty and protected by applicable
           intellectual property laws.
         </p>
         <p>
@@ -209,7 +209,7 @@ export default function TermsPage() {
 
       <Section title="9. Limitation of Liability">
         <p>
-          TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, KHAZNETY SHALL NOT BE LIABLE
+          TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, HESABATY SHALL NOT BE LIABLE
           FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING
           FROM YOUR USE OF OR INABILITY TO USE THE APP, INCLUDING BUT NOT LIMITED TO LOSS
           OF DATA, FINANCIAL LOSS, OR LOSS OF PROFITS, EVEN IF WE HAVE BEEN ADVISED OF THE
@@ -251,10 +251,10 @@ export default function TermsPage() {
           Questions about these Terms?
           <br />
           <a
-            href="mailto:legal@khaznety.com"
-            className="text-[#1A7A52] hover:underline cursor-pointer"
+            href="mailto:legal@hesabaty.com"
+            className="text-[#7A9A7E] hover:underline cursor-pointer"
           >
-            legal@khaznety.com
+            legal@hesabaty.com
           </a>
         </p>
       </Section>

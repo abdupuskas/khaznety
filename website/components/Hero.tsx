@@ -57,7 +57,7 @@ function PhoneMockup() {
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent">
                 <Shield size={14} className="text-white" strokeWidth={2} />
               </div>
-              <span className="text-sm font-semibold text-white">Khaznety</span>
+              <span className="text-sm font-semibold text-white">Hesabaty</span>
             </div>
           </div>
 

@@ -185,7 +185,7 @@ function ProCard({
         Most Popular
       </span>
 
-      <h3 className="text-xl font-bold text-white">Khaznety Pro</h3>
+      <h3 className="text-xl font-bold text-white">Hesabaty Pro</h3>
       <div className="mt-4 flex items-baseline gap-2">
         <span className="text-3xl font-bold text-white">EGP {price}</span>
         <span className="text-white/60 text-sm">{period}</span>

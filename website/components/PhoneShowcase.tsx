@@ -67,7 +67,7 @@ function PhoneFrame({ screenshot, label }: { screenshot: string; label: string }
       <div className="relative h-full w-full overflow-hidden rounded-[30px]">
         <Image
           src={`/screenshots/${screenshot}`}
-          alt={`Khaznety ${label.toLowerCase()} screen`}
+          alt={`Hesabaty ${label.toLowerCase()} screen`}
           fill
           sizes="(max-width: 640px) 220px, 250px"
           className="object-cover object-top"

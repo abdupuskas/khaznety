@@ -29,7 +29,7 @@ export default function ContactPage() {
       const email = data.get("email") as string;
       const subject = data.get("subject") as string;
       const message = data.get("message") as string;
-      const mailto = `mailto:hello@khaznety.com?subject=${encodeURIComponent(subject || "Contact from website")}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
+      const mailto = `mailto:hello@hesabaty.com?subject=${encodeURIComponent(subject || "Contact from website")}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
       window.location.href = mailto;
       setState("idle");
       return;
@@ -59,8 +59,8 @@ export default function ContactPage() {
   if (state === "success") {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF4EE] mb-6">
-          <CheckCircle size={32} color="#1A7A52" strokeWidth={1.75} />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8EFE8] mb-6">
+          <CheckCircle size={32} color="#7A9A7E" strokeWidth={1.75} />
         </div>
         <h2 className="text-2xl font-bold text-[#1A1A1A]">Message sent!</h2>
         <p className="mt-3 text-[#5C5850] max-w-sm">
@@ -94,22 +94,22 @@ export default function ContactPage() {
         {[
           {
             label: "General enquiries",
-            value: "hello@khaznety.com",
-            href: "mailto:hello@khaznety.com",
+            value: "hello@hesabaty.com",
+            href: "mailto:hello@hesabaty.com",
           },
           {
             label: "Privacy & data",
-            value: "privacy@khaznety.com",
-            href: "mailto:privacy@khaznety.com",
+            value: "privacy@hesabaty.com",
+            href: "mailto:privacy@hesabaty.com",
           },
         ].map((c) => (
           <a
             key={c.label}
             href={c.href}
-            className="group block rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-4 hover:border-[#B6DEC8] hover:bg-[#EAF4EE] transition-colors duration-150 cursor-pointer"
+            className="group block rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-4 hover:border-[#A8C4AB] hover:bg-[#E8EFE8] transition-colors duration-150 cursor-pointer"
           >
             <p className="text-xs uppercase tracking-widest text-[#9C9485] mb-1">{c.label}</p>
-            <p className="text-sm font-medium text-[#1A7A52]">{c.value}</p>
+            <p className="text-sm font-medium text-[#7A9A7E]">{c.value}</p>
           </a>
         ))}
       </div>
@@ -128,7 +128,7 @@ export default function ContactPage() {
               required
               autoComplete="name"
               placeholder="Abdu Hassan"
-              className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-[#9C9485] outline-none transition-colors duration-150 focus:border-[#1A7A52] focus:ring-2 focus:ring-[#1A7A52]/20"
+              className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-[#9C9485] outline-none transition-colors duration-150 focus:border-[#7A9A7E] focus:ring-2 focus:ring-[#7A9A7E]/20"
             />
           </div>
           <div>
@@ -142,7 +142,7 @@ export default function ContactPage() {
               required
               autoComplete="email"
               placeholder="abdu@example.com"
-              className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-[#9C9485] outline-none transition-colors duration-150 focus:border-[#1A7A52] focus:ring-2 focus:ring-[#1A7A52]/20"
+              className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-[#9C9485] outline-none transition-colors duration-150 focus:border-[#7A9A7E] focus:ring-2 focus:ring-[#7A9A7E]/20"
             />
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function ContactPage() {
             name="subject"
             required
             defaultValue=""
-            className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] outline-none transition-colors duration-150 focus:border-[#1A7A52] focus:ring-2 focus:ring-[#1A7A52]/20 cursor-pointer appearance-none"
+            className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] outline-none transition-colors duration-150 focus:border-[#7A9A7E] focus:ring-2 focus:ring-[#7A9A7E]/20 cursor-pointer appearance-none"
           >
             <option value="" disabled>Select a topic…</option>
             <option value="General question">General question</option>
@@ -179,7 +179,7 @@ export default function ContactPage() {
             required
             rows={6}
             placeholder="Tell us what's on your mind…"
-            className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-[#9C9485] outline-none transition-colors duration-150 focus:border-[#1A7A52] focus:ring-2 focus:ring-[#1A7A52]/20 resize-none"
+            className="w-full rounded-xl border border-[#E4DDD2] bg-[#FAFAF8] px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-[#9C9485] outline-none transition-colors duration-150 focus:border-[#7A9A7E] focus:ring-2 focus:ring-[#7A9A7E]/20 resize-none"
           />
         </div>
 
@@ -192,7 +192,7 @@ export default function ContactPage() {
         <button
           type="submit"
           disabled={state === "submitting"}
-          className="inline-flex items-center gap-2 rounded-full bg-[#1A7A52] px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[#0D3D28] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A7A52]"
+          className="inline-flex items-center gap-2 rounded-full bg-[#7A9A7E] px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[#5E7D63] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
         >
           <Send size={15} strokeWidth={1.75} />
           {state === "submitting" ? "Sending…" : "Send message"}
@@ -200,7 +200,7 @@ export default function ContactPage() {
 
         <p className="text-xs text-[#9C9485]">
           By submitting this form you agree to our{" "}
-          <a href="/privacy" className="text-[#1A7A52] hover:underline cursor-pointer">Privacy Policy</a>.
+          <a href="/privacy" className="text-[#7A9A7E] hover:underline cursor-pointer">Privacy Policy</a>.
         </p>
       </form>
     </div>

@@ -19,10 +19,10 @@ export default function LegalLayout({
             <span>Back to home</span>
           </Link>
           <Link href="/" className="flex items-center gap-2 cursor-pointer group">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#1A7A52] transition-colors duration-150 group-hover:bg-[#0D3D28]">
+            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#7A9A7E] transition-colors duration-150 group-hover:bg-[#5E7D63]">
               <Shield size={14} color="#FFFFFF" strokeWidth={2} />
             </div>
-            <span className="text-base font-bold text-[#1A1A1A] tracking-tight">Khaznety</span>
+            <span className="text-base font-bold text-[#1A1A1A] tracking-tight">Hesabaty</span>
           </Link>
         </div>
       </header>
@@ -36,7 +36,7 @@ export default function LegalLayout({
       <footer className="border-t border-[#E4DDD2] bg-[#FAFAF8] py-6 px-4">
         <div className="mx-auto max-w-3xl flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs text-[#9C9485]">
-            &copy; {new Date().getFullYear()} Khaznety. All rights reserved.
+            &copy; {new Date().getFullYear()} Hesabaty. All rights reserved.
           </p>
           <nav className="flex items-center gap-4">
             <Link href="/privacy" className="text-xs text-[#9C9485] hover:text-[#5C5850] transition-colors duration-150 cursor-pointer">

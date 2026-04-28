@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Khaznety",
-  description: "How Khaznety collects, uses, and protects your personal and financial data.",
+  title: "Privacy Policy — Hesabaty",
+  description: "How Hesabaty collects, uses, and protects your personal and financial data.",
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <h2 className="text-lg font-bold text-[#1A7A52] mb-3">{title}</h2>
+      <h2 className="text-lg font-bold text-[#7A9A7E] mb-3">{title}</h2>
       <div className="space-y-3 text-[15px] leading-relaxed text-[#5C5850]">
         {children}
       </div>
@@ -19,7 +19,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Bullet({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-2.5">
-      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#1A7A52]" />
+      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#7A9A7E]" />
       <span>{children}</span>
     </li>
   );
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
         <p className="text-xs font-medium uppercase tracking-widest text-[#9C9485] mb-3">Legal</p>
         <h1 className="text-3xl font-bold text-[#1A1A1A]">Privacy Policy</h1>
         <p className="mt-3 text-[#5C5850]">
-          Khaznety is committed to protecting your privacy. This policy explains what data we
+          Hesabaty is committed to protecting your privacy. This policy explains what data we
           collect, why we collect it, and how we keep it safe.
         </p>
         <p className="mt-3 text-sm text-[#9C9485]">
@@ -43,14 +43,14 @@ export default function PrivacyPage() {
 
       <Section title="1. Who We Are">
         <p>
-          Khaznety ("we", "our", "us") is a personal budgeting application designed for users in
-          Egypt. We are the data controller for all personal data processed through the Khaznety
+          Hesabaty ("we", "our", "us") is a personal budgeting application designed for users in
+          Egypt. We are the data controller for all personal data processed through the Hesabaty
           mobile app and this website.
         </p>
         <p>
           Questions about this policy? Contact us at{" "}
-          <a href="mailto:privacy@khaznety.com" className="text-[#1A7A52] hover:underline cursor-pointer">
-            privacy@khaznety.com
+          <a href="mailto:privacy@hesabaty.com" className="text-[#7A9A7E] hover:underline cursor-pointer">
+            privacy@hesabaty.com
           </a>
           .
         </p>
@@ -89,7 +89,7 @@ export default function PrivacyPage() {
             <Bullet>
               <strong>Apple Pay (iOS):</strong> When you use the Apple Shortcuts integration,
               the Shortcut sends us the merchant name, amount, currency, and timestamp. Raw
-              Apple Pay receipt data is never transmitted to or stored by Khaznety.
+              Apple Pay receipt data is never transmitted to or stored by Hesabaty.
             </Bullet>
             <Bullet>
               <strong>Bank SMS (iOS &amp; Android):</strong> On iOS, an Apple Shortcut parses
@@ -124,7 +124,7 @@ export default function PrivacyPage() {
 
       <Section title="3. How We Use Your Data">
         <ul className="space-y-1.5">
-          <Bullet>To provide, maintain, and improve the Khaznety service</Bullet>
+          <Bullet>To provide, maintain, and improve the Hesabaty service</Bullet>
           <Bullet>To authenticate you and keep your account secure</Bullet>
           <Bullet>To calculate budgets, rollovers, and analytics on your behalf</Bullet>
           <Bullet>To send push notifications you have opted in to (reminders, alerts)</Bullet>
@@ -139,7 +139,7 @@ export default function PrivacyPage() {
       </Section>
 
       <Section title="4. Third-Party Services">
-        <p>We use a small number of trusted third-party services to operate Khaznety:</p>
+        <p>We use a small number of trusted third-party services to operate Hesabaty:</p>
 
         <div className="mt-3 rounded-xl border border-[#E4DDD2] overflow-hidden">
           {[
@@ -189,7 +189,7 @@ export default function PrivacyPage() {
                 href={s.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[#1A7A52] hover:underline cursor-pointer mt-0.5 inline-block"
+                className="text-xs text-[#7A9A7E] hover:underline cursor-pointer mt-0.5 inline-block"
               >
                 Privacy policy →
               </a>
@@ -241,8 +241,8 @@ export default function PrivacyPage() {
         </ul>
         <p className="mt-3">
           To exercise any of these rights, email us at{" "}
-          <a href="mailto:privacy@khaznety.com" className="text-[#1A7A52] hover:underline cursor-pointer">
-            privacy@khaznety.com
+          <a href="mailto:privacy@hesabaty.com" className="text-[#7A9A7E] hover:underline cursor-pointer">
+            privacy@hesabaty.com
           </a>
           . We will respond within 30 days.
         </p>
@@ -250,7 +250,7 @@ export default function PrivacyPage() {
 
       <Section title="8. Children's Privacy">
         <p>
-          Khaznety is not intended for users under the age of 13. We do not knowingly collect
+          Hesabaty is not intended for users under the age of 13. We do not knowingly collect
           personal data from children. If you believe a child has provided us with personal data,
           please contact us immediately and we will delete it.
         </p>
@@ -284,10 +284,10 @@ export default function PrivacyPage() {
 
       <Section title="12. Contact">
         <p>
-          Khaznety &mdash; Privacy Enquiries
+          Hesabaty &mdash; Privacy Enquiries
           <br />
-          <a href="mailto:privacy@khaznety.com" className="text-[#1A7A52] hover:underline cursor-pointer">
-            privacy@khaznety.com
+          <a href="mailto:privacy@hesabaty.com" className="text-[#7A9A7E] hover:underline cursor-pointer">
+            privacy@hesabaty.com
           </a>
         </p>
       </Section>

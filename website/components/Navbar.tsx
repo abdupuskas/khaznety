@@ -106,13 +106,13 @@ export default function Navbar() {
               });
             }}
             className="flex items-center gap-2 cursor-pointer group"
-            aria-label="Khaznety - back to top"
+            aria-label="Hesabaty - back to top"
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#1A7A52] transition-colors duration-200 group-hover:bg-[#0D3D28]">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#7A9A7E] transition-colors duration-200 group-hover:bg-[#5E7D63]">
               <Shield size={16} color="#FFFFFF" strokeWidth={2} />
             </div>
             <span className="text-lg font-bold text-[#1A1A1A] tracking-tight">
-              Khaznety
+              Hesabaty
             </span>
           </a>
 
@@ -123,7 +123,7 @@ export default function Navbar() {
                 <a
                   href={link.href}
                   onClick={(e) => handleSmoothScroll(e, link.href)}
-                  className="cursor-pointer px-3 py-2 text-sm font-medium text-[#5C5850] rounded-lg transition-colors duration-200 hover:text-[#1A1A1A] hover:bg-[#EEECE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A7A52]"
+                  className="cursor-pointer px-3 py-2 text-sm font-medium text-[#5C5850] rounded-lg transition-colors duration-200 hover:text-[#1A1A1A] hover:bg-[#EEECE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
                 >
                   {link.label}
                 </a>
@@ -137,7 +137,7 @@ export default function Navbar() {
             <a
               href="#download"
               onClick={(e) => handleSmoothScroll(e, "#download")}
-              className="hidden sm:inline-flex cursor-pointer items-center px-5 py-2 text-sm font-semibold text-white bg-[#1A7A52] rounded-full transition-colors duration-200 hover:bg-[#0D3D28] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A7A52]"
+              className="hidden sm:inline-flex cursor-pointer items-center px-5 py-2 text-sm font-semibold text-white bg-[#7A9A7E] rounded-full transition-colors duration-200 hover:bg-[#5E7D63] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
             >
               Download
             </a>
@@ -146,7 +146,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMobileOpen((prev) => !prev)}
-              className="md:hidden cursor-pointer flex items-center justify-center w-10 h-10 rounded-lg transition-colors duration-200 hover:bg-[#EEECE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A7A52]"
+              className="md:hidden cursor-pointer flex items-center justify-center w-10 h-10 rounded-lg transition-colors duration-200 hover:bg-[#EEECE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
             >
@@ -179,7 +179,7 @@ export default function Navbar() {
                     <a
                       href={link.href}
                       onClick={(e) => handleSmoothScroll(e, link.href)}
-                      className="cursor-pointer block px-3 py-2.5 text-sm font-medium text-[#5C5850] rounded-lg transition-colors duration-200 hover:text-[#1A1A1A] hover:bg-[#EEECE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A7A52]"
+                      className="cursor-pointer block px-3 py-2.5 text-sm font-medium text-[#5C5850] rounded-lg transition-colors duration-200 hover:text-[#1A1A1A] hover:bg-[#EEECE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
                     >
                       {link.label}
                     </a>
@@ -189,7 +189,7 @@ export default function Navbar() {
                   <a
                     href="#download"
                     onClick={(e) => handleSmoothScroll(e, "#download")}
-                    className="cursor-pointer flex items-center justify-center mx-3 px-5 py-2.5 text-sm font-semibold text-white bg-[#1A7A52] rounded-full transition-colors duration-200 hover:bg-[#0D3D28] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A7A52]"
+                    className="cursor-pointer flex items-center justify-center mx-3 px-5 py-2.5 text-sm font-semibold text-white bg-[#7A9A7E] rounded-full transition-colors duration-200 hover:bg-[#5E7D63] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A9A7E]"
                   >
                     Download
                   </a>
