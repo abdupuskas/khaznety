@@ -62,6 +62,12 @@ export function CTAFooter() {
                 Terms
               </a>
               <a
+                href="/support"
+                className="cursor-pointer text-sm text-white/60 transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                Support
+              </a>
+              <a
                 href="/contact"
                 className="cursor-pointer text-sm text-white/60 transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >

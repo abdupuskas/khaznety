@@ -49,7 +49,7 @@ export function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
-  const proPrice = isAnnual ? "399" : "59";
+  const proPrice = isAnnual ? "800" : "100";
   const proPeriod = isAnnual ? "/year" : "/month";
 
   return (
@@ -93,7 +93,7 @@ export function Pricing() {
           >
             Annual
             <span className="bg-accent text-white text-xs rounded-full px-2 py-0.5 font-medium">
-              Save 30%
+              Save 33%
             </span>
           </button>
         </div>
@@ -191,7 +191,7 @@ function ProCard({
         <span className="text-white/60 text-sm">{period}</span>
         {isAnnual && (
           <span className="text-white/40 text-sm line-through ml-1">
-            EGP 59/mo
+            EGP 100/mo
           </span>
         )}
       </div>

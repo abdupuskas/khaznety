@@ -43,6 +43,9 @@ export default function LegalLayout({
             <Link href="/terms" className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors duration-150 cursor-pointer">
               Terms of Service
             </Link>
+            <Link href="/support" className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors duration-150 cursor-pointer">
+              Support
+            </Link>
           </nav>
         </div>
       </footer>
