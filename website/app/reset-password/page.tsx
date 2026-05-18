@@ -19,12 +19,11 @@ export default function ResetPasswordPage() {
 
     const initSession = async () => {
       const url = new URL(window.location.href);
-      const code = url.searchParams.get("code");
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+
       const errorDescription =
         url.searchParams.get("error_description") ||
-        new URLSearchParams(window.location.hash.replace(/^#/, "")).get(
-          "error_description"
-        );
+        hashParams.get("error_description");
 
       if (errorDescription) {
         if (!cancelled) {
@@ -34,6 +33,28 @@ export default function ResetPasswordPage() {
         return;
       }
 
+      const tokenHash = url.searchParams.get("token_hash");
+      const code = url.searchParams.get("code");
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+
+      // Modern flow: ?token_hash=...&type=recovery (custom email template)
+      if (tokenHash) {
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: "recovery",
+        });
+        if (cancelled) return;
+        if (verifyError) {
+          setError(verifyError.message);
+          setStatus("invalid");
+          return;
+        }
+        setStatus("ready");
+        return;
+      }
+
+      // PKCE flow: ?code=... (when redirectTo was passed by the app)
       if (code) {
         const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
         if (cancelled) return;
@@ -46,7 +67,23 @@ export default function ResetPasswordPage() {
         return;
       }
 
-      // Legacy hash-based recovery links — detectSessionInUrl handles them.
+      // Implicit flow: #access_token=...&refresh_token=...
+      if (accessToken && refreshToken) {
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (cancelled) return;
+        if (sessionError) {
+          setError(sessionError.message);
+          setStatus("invalid");
+          return;
+        }
+        setStatus("ready");
+        return;
+      }
+
+      // Fallback: detectSessionInUrl may have already consumed the hash.
       const { data } = await supabase.auth.getSession();
       if (cancelled) return;
       if (data.session) {
